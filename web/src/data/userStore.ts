@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { User } from "@/types/user";
 import { create } from "zustand";
 import Cookies from "js-cookie";
