@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  toolbox-web:
+    container_name: toolbox-web
+    build:
+      context: web/
+      dockerfile: Dockerfile
+      target: prod
+    restart: always
+    ports:
+      - "3000:3000"
+  toolbox-server:
+    container_name: toolbox-server
+    build:
+      context: server/
+      dockerfile: Dockerfile
+      target: prod
+    restart: always
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./server/.env
+    # environment:
+    #   - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}?schema=public
+    #   - JWT_SECRET=${JWT_SECRET}
+    #   - JWT_REFRESH_TOKEN=${JWT_REFRESH_TOKEN}
+    #   - MAIL_HOST=${MAIL_HOST}
+    #   - MAIL_PORT=${MAIL_PORT}
+    #   - MAIL_USER=${MAIL_USER}
+    #   - MAIL_PASSWORD=${MAIL_PASSWORD}
+    #   - MAIL_FROM=${MAIL_FROM}
