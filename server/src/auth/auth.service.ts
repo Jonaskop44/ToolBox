@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { LoginDto } from './dto/auth.dto';
 import { compare } from 'bcrypt';
+import { User } from 'src/user/entities/user.entity';
 
 const EXPIRE_TIME = 1000 * 60 * 60 * 24;
 
@@ -48,7 +49,7 @@ export class AuthService {
     };
   }
 
-  async refreshToken(user: any) {
+  async refreshToken(user: User) {
     const payload = {
       email: user.email,
       sub: user.sub,
