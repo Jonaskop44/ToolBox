@@ -19,13 +19,12 @@ export default class Login {
         const { setUser } = useUserStore.getState();
         setUser(data);
 
-        return { status: true, data: data, message: "Login sucessfully" };
+        return { status: true, data: data };
       })
       .catch((error) => {
         return {
           status: false,
           data: null,
-          message: error.response.data.message || "Something went wrong!",
         };
       });
   }

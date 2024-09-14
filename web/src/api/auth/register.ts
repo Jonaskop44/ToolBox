@@ -12,13 +12,12 @@ export default class Register {
         password: user.password,
       });
 
-      if (response.status !== 201)
-        return { status: false, message: "Something went wrong" };
+      if (response.status !== 201) return { status: false };
 
       const data = await response.data;
-      return { status: true, data: data, message: "User created successfully" };
+      return { status: true, data: data };
     } catch (error) {
-      return { status: false, message: "Something went wrong!" };
+      return { status: false };
     }
   }
 }
