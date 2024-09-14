@@ -16,14 +16,7 @@ datasource db {
 enum Role {
   ADMIN
   MODERATOR
-  VIP
-  PREMIUM
   USER
-}
-
-enum TokenType {
-  ACTIVATE
-  RESET_PASSWORD
 }
 
 model User {
@@ -34,19 +27,4 @@ model User {
   role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  verificationToken VerificationToken[]
-}
-
-model VerificationToken {
-  id          Int       @id @default(autoincrement())
-  token       String    @unique
-  type        TokenType
-  activatedAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
