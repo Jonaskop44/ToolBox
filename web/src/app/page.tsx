@@ -1,14 +1,76 @@
 import ApiClient from "@/api";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Image from "next/image";
-import { Input } from "@nextui-org/react";
+import { Button, Checkbox, Input } from "@nextui-org/react";
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
 
 const apiClient = new ApiClient();
 type Variant = "LOGIN" | "SIGNUP";
 
 const Home = () => {
   const [variant, setVariant] = useState<Variant>("LOGIN");
+  const [isVisible, setIsVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [data, setData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    rememberMe: false,
+  });
+
+  const [touched, setTouched] = useState({
+    username: false,
+    email: false,
+    password: false,
+  });
+
+  const toggleVisibility = () => setIsVisible(!isVisible);
+  const handleBlur = (field: string) => {
+    setTouched({ ...touched, [field]: true });
+  };
+
+  const isInvalidEmail = useMemo(() => {
+    return !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(data.email);
+  }, [data.email]);
+
+  const isUsernameValid = useMemo(() => {
+    return data.username.trim() === "";
+  }, [data.username]);
+
+  const isPasswordValid = useMemo(() => {
+    return data.password.trim() === "";
+  }, [data.password]);
+
+  const toggleVariant = useCallback(() => {
+    setData({
+      username: "",
+      email: "",
+      password: "",
+      rememberMe: false,
+    });
+    setTouched({
+      username: false,
+      email: false,
+      password: false,
+    });
+    setIsVisible(false);
+    if (variant === "LOGIN") {
+      setVariant("SIGNUP");
+    } else {
+      setVariant("LOGIN");
+    }
+  }, [variant]);
+
+  const isFormValid = useMemo(() => {
+    if (variant === "SIGNUP") {
+      return !isInvalidEmail && !isUsernameValid && !isPasswordValid;
+    } else {
+      return !isInvalidEmail && !isPasswordValid;
+    }
+  }, [isInvalidEmail, isUsernameValid, isPasswordValid, variant]);
 
   return (
     <>
@@ -56,117 +118,24 @@ const Home = () => {
                 {variant === "LOGIN" ? "Anmelden" : "Erstelle ein Konto"}
               </h2>
 
-              <form onSubmit={onSubmit}>
+              <form>
                 {variant === "SIGNUP" && (
                   <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5 lg:flex-row lg:justify-between lg:gap-14">
                     <Input
-                      label="Vorname"
+                      label="Username"
                       isRequired
                       type="text"
                       variant="underlined"
                       className="w-full pb-3.5 lg:w-1/2"
-                      value={data.firstName}
+                      value={data.username}
                       onChange={(e) =>
-                        setData({ ...data, firstName: e.target.value })
+                        setData({ ...data, username: e.target.value })
                       }
                       onBlur={() => handleBlur("firstName")}
-                      isInvalid={touched.firstName && isFirstnameValid}
+                      isInvalid={touched.username && isUsernameValid}
                       errorMessage="Bitte geben Sie Ihren Vornamen ein"
                       color={
-                        touched.firstName && isFirstnameValid
-                          ? "danger"
-                          : "default"
-                      }
-                    />
-
-                    <Input
-                      label="Nachname"
-                      isRequired
-                      type="text"
-                      variant="underlined"
-                      className="w-full pb-3.5 lg:w-1/2"
-                      value={data.lastName}
-                      onChange={(e) =>
-                        setData({ ...data, lastName: e.target.value })
-                      }
-                      onBlur={() => handleBlur("lastName")}
-                      isInvalid={touched.lastName && isLastnameValid}
-                      errorMessage="Bitte geben Sie Ihren Nachnamen ein"
-                      color={
-                        touched.lastName && isLastnameValid
-                          ? "danger"
-                          : "default"
-                      }
-                    />
-                  </div>
-                )}
-
-                {variant === "SIGNUP" && (
-                  <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5 lg:flex-row lg:justify-between lg:gap-14">
-                    <Autocomplete
-                      label="Anrede"
-                      isRequired
-                      variant="underlined"
-                      defaultItems={designation}
-                      className="w-full pb-3.5 lg:w-1/2"
-                      classNames={{
-                        popoverContent: "dark:bg-blacksection",
-                      }}
-                      listboxProps={{
-                        emptyContent: "Ihre Eingabe wurde nicht gefunden",
-                        itemClasses: {
-                          base: ["dark:data-[hover=true]:bg-white/10"],
-                        },
-                      }}
-                      onInputChange={(value) => {
-                        const selectedItem = designation.find(
-                          (item) => item.label === value
-                        );
-
-                        setData({
-                          ...data,
-                          designation: selectedItem?.value || "",
-                          companyName: "",
-                        });
-                      }}
-                      onBlur={() => handleBlur("designation")}
-                      isInvalid={touched.designation && isDesignationValid}
-                      errorMessage="Bitte wählen Sie eine Anrede aus"
-                      color={
-                        touched.designation && isDesignationValid
-                          ? "danger"
-                          : "default"
-                      }
-                    >
-                      {(item) => (
-                        <AutocompleteItem key={item.value}>
-                          {item.label}
-                        </AutocompleteItem>
-                      )}
-                    </Autocomplete>
-
-                    <Input
-                      label="Firmenname"
-                      isRequired={data.designation === "COMPANY"}
-                      isDisabled={data.designation !== "COMPANY"}
-                      type="text"
-                      variant="underlined"
-                      className="w-full pb-3.5 lg:w-1/2"
-                      value={data.companyName}
-                      onChange={(e) =>
-                        setData({ ...data, companyName: e.target.value })
-                      }
-                      onBlur={() => handleBlur("companyName")}
-                      isInvalid={
-                        touched.companyName &&
-                        isCompanyValid &&
-                        data.designation === "COMPANY"
-                      }
-                      errorMessage="Bitte geben Sie Ihren Vornamen ein"
-                      color={
-                        touched.companyName &&
-                        isCompanyValid &&
-                        data.designation === "COMPANY"
+                        touched.username && isUsernameValid
                           ? "danger"
                           : "default"
                       }
@@ -268,10 +237,7 @@ const Home = () => {
 
                 {variant === "LOGIN" ? (
                   <div className="mt-12.5 border-t border-stroke py-5 flex justify-around dark:border-strokedark">
-                    <p
-                      className="cursor-pointer text-black hover:text-primary dark:text-white dark:hover:text-primary font-medium"
-                      onClick={forgotPassword}
-                    >
+                    <p className="cursor-pointer text-black hover:text-primary dark:text-white dark:hover:text-primary font-medium">
                       Passwort vergessen?
                     </p>
                     <p>
