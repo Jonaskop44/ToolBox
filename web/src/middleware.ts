@@ -2,19 +2,17 @@
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import Cookies from "js-cookie";
+import cookie from "cookie";
 import ApiClient from "./api";
 
 const apiClient = new ApiClient();
 
 export async function middleware(req: NextRequest) {
   // Parse cookies from the request headers
-  const cookies = Cookies.get();
+  const cookies = cookie.parse(req.headers.get("cookie") || "");
   const token = cookies.accessToken;
   const url = req.nextUrl.clone();
   const path = url.pathname;
-
-  console.log("Path: ", path);
 
   // Check if the token exists
   if (path.startsWith("/dashboard")) {
@@ -40,5 +38,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/auth"],
+  matcher: ["/dashboard/:path*", "/"],
 };
