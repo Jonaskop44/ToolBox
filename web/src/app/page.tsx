@@ -111,7 +111,18 @@ const Home = () => {
       if (response.status === false) {
         toast.error("There is already an account with this email address");
       } else {
-        window.location.replace("/dashboard");
+        const login = await apiClient.auth.login.post(data);
+        if (data.rememberMe) {
+          Cookies.set("accessToken", login.data.backendTokens.accessToken, {
+            expires: 1,
+          });
+          Cookies.set("refreshToken", login.data.backendTokens.refreshToken, {
+            expires: 7,
+          });
+        } else {
+          Cookies.set("accessToken", login.data.backendTokens.accessToken);
+        }
+        window.location.reload();
       }
       setIsLoading(false);
     }
