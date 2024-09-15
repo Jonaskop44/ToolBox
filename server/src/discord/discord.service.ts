@@ -13,5 +13,7 @@ export class DiscordService implements OnModuleInit {
     this.client.once('ready', () => {
       console.log('Bot is online!');
     });
+
+    await this.client.login('');
   }
 }
