@@ -67,4 +67,10 @@ export class AuthService {
       expiresIn: new Date().setTime(new Date().getTime() + EXPIRE_TIME),
     };
   }
+
+  async verifyToken(token: string) {
+    return this.jwtService.verifyAsync(token, {
+      secret: process.env.JWT_SECRET,
+    });
+  }
 }
