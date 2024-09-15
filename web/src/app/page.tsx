@@ -136,7 +136,16 @@ const Home = () => {
               : "Create an account"}
           </h2>
           <div className="bg-white px-4 py-8 shadow-2xl sm:rounded-lg sm:px-10">
-            <form onSubmit={onSubmit} className="space-y-6">
+            <form
+              onSubmit={(event) => {
+                if (isFormValid) {
+                  onSubmit(event);
+                } else {
+                  event.preventDefault();
+                }
+              }}
+              className="space-y-6"
+            >
               {variant == "SIGNUP" && (
                 <Input
                   label="Username"
