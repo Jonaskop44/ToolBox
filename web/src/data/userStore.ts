@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { User } from "@/types/user";
 import { create } from "zustand";
 import Cookies from "js-cookie";
 import axios from "axios";
-import { Constants } from "@/api/constants";
 
 interface UserState {
   user: User | null;
@@ -20,7 +18,7 @@ export const useUserStore = create<UserState>((set) => ({
     const token = Cookies.get("accessToken");
     if (token) {
       await axios
-        .get(`${Constants.API_BASE}/user/token/data/${token}`)
+        .get(`/user/token/data/${token}`)
         .then(async (response) => {
           if (response.status !== 200) {
             set({ user: null });
@@ -43,7 +41,7 @@ export const useUserStore = create<UserState>((set) => ({
     if (!accessToken && refreshToken) {
       await axios
         .post(
-          `${Constants.API_BASE}/auth/refresh-token`,
+          `/auth/refresh-token`,
           {
             data: "[form]",
           },
