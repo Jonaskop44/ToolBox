@@ -100,6 +100,7 @@ const Home = () => {
                   label="Username"
                   isRequired
                   type="text"
+                  variant="underlined"
                   value={data.username}
                   onChange={(e) =>
                     setData({ ...data, username: e.target.value })
@@ -116,22 +117,25 @@ const Home = () => {
                 label="Email Adresse"
                 isRequired
                 type="email"
+                variant="underlined"
                 value={data.email}
                 onChange={(e) => setData({ ...data, email: e.target.value })}
                 onBlur={() => handleBlur("email")}
                 isInvalid={touched.email && isInvalidEmail}
-                errorMessage="Bitte geben Sie Ihre E-Mail-Adresse ein"
+                errorMessage="Email is required"
                 color={touched.email && isInvalidEmail ? "danger" : "default"}
               />
+
               <Input
                 label="Passwort"
                 isRequired
+                variant="underlined"
                 type={isVisible ? "text" : "password"}
                 value={data.password}
                 onChange={(e) => setData({ ...data, password: e.target.value })}
                 endContent={
                   <button
-                    className="focus:outline-none"
+                    className="focus:outline-none h-full"
                     type="button"
                     onClick={toggleVisibility}
                     aria-label="toggle password visibility"
@@ -145,14 +149,14 @@ const Home = () => {
                 }
                 onBlur={() => handleBlur("password")}
                 isInvalid={touched.password && isPasswordValid}
-                errorMessage="Bitte geben Sie ein Passwort ein"
+                errorMessage="Password is required"
                 color={
                   touched.password && isPasswordValid ? "danger" : "default"
                 }
               />
 
               <div className="flex items-center justify-between">
-                <Checkbox defaultSelected>Remember me</Checkbox>
+                <Checkbox>Remember me</Checkbox>
                 <button className="text-sm font-semibold text-[#0070e0] hover:underline">
                   <Link href="/forgot-password">Forgot password?</Link>
                 </button>
@@ -164,7 +168,9 @@ const Home = () => {
                   disabled={!isFormValid}
                   variant="solid"
                   className={`bg-[#0544b5] text-white font-semibold hover:bg-[#0070e0] ${
-                    isFormValid ? "" : "opacity-50 cursor-not-allowed"
+                    isFormValid
+                      ? ""
+                      : "opacity-50 cursor-not-allowed hover:bg-[#0544b5]"
                   }`}
                 >
                   {variant === "LOGIN" ? "Sign in" : "Register"}
