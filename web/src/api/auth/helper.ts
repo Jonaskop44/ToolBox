@@ -10,17 +10,16 @@ export default class Helper {
       });
 
       if (response.status !== 201) {
-        return { status: false, message: "Invalid token" };
+        return { status: false };
       }
 
       const data = await response.data;
       return {
         status: true,
         data: data,
-        message: "Token verified successfully",
       };
     } catch (err) {
-      return { status: false, message: "Something went wrong" };
+      return { status: false };
     }
   }
 }
