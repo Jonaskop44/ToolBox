@@ -41,7 +41,7 @@ export const useUserStore = create<UserState>((set) => ({
     if (!accessToken && refreshToken) {
       await axios
         .post(
-          `/auth/refresh-token`,
+          `/auth/refreshToken`,
           {
             data: "[form]",
           },

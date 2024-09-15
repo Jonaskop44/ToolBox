@@ -105,6 +105,15 @@ const Home = () => {
       }
       setIsLoading(false);
     }
+
+    if (variant === "SIGNUP") {
+      const response = await apiClient.auth.register.post(data);
+      if (response.status === false) {
+        toast.error("There is already an account with this email address");
+      } else {
+        window.location.replace("/dashboard");
+      }
+    }
   };
 
   return (
