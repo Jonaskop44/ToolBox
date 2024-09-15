@@ -13,3 +13,9 @@ export class CreateUserDto {
   @IsNotEmpty()
   readonly password: string;
 }
+
+export class GetUserDataFromTokenDto {
+  @IsString()
+  @IsNotEmpty()
+  readonly token: string;
+}

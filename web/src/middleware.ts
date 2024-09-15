@@ -14,19 +14,21 @@ export async function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
   const path = url.pathname;
 
+  console.log("Path: ", path);
+
   // Check if the token exists
   if (path.startsWith("/dashboard")) {
     if (!token) {
-      return NextResponse.redirect(new URL("/auth", req.url));
+      return NextResponse.redirect(new URL("/", req.url));
     }
 
     // Verify the token
     const response = await apiClient.auth.helper.verifyToken(token);
 
     if (response.status === false) {
-      return NextResponse.redirect(new URL("/auth", req.url));
+      return NextResponse.redirect(new URL("/", req.url));
     }
-  } else if (path.startsWith("/auth")) {
+  } else if (path.startsWith("/")) {
     const response = await apiClient.auth.helper.verifyToken(token);
 
     if (response.status === true) {
