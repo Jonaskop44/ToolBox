@@ -113,6 +113,7 @@ const Home = () => {
       } else {
         window.location.replace("/dashboard");
       }
+      setIsLoading(false);
     }
   };
 
@@ -206,13 +207,9 @@ const Home = () => {
                 <Button
                   fullWidth
                   isLoading={isLoading}
-                  disabled={!isFormValid}
+                  isDisabled={!isFormValid}
                   variant="solid"
-                  className={`bg-[#0544b5] text-white font-semibold hover:bg-[#0070e0] ${
-                    isFormValid
-                      ? ""
-                      : "opacity-50 cursor-not-allowed hover:bg-[#0544b5]"
-                  }`}
+                  className="bg-[#0544b5] text-white font-semibold hover:bg-[#0070e0]"
                 >
                   {variant === "LOGIN" ? "Sign in" : "Register"}
                 </Button>
