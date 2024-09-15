@@ -225,6 +225,7 @@ const Home = () => {
                   isLoading={isLoading}
                   isDisabled={!isFormValid}
                   variant="solid"
+                  type="submit"
                   className="bg-[#0544b5] text-white font-semibold hover:bg-[#0070e0]"
                 >
                   {variant === "LOGIN" ? "Sign in" : "Register"}
