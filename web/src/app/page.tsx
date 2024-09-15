@@ -207,9 +207,16 @@ const Home = () => {
               />
 
               <div className="flex items-center justify-between">
-                <Checkbox>Remember me</Checkbox>
+                <Checkbox
+                  isSelected={data.rememberMe}
+                  onValueChange={(value) => {
+                    setData({ ...data, rememberMe: value });
+                  }}
+                >
+                  Remember me
+                </Checkbox>
                 <button className="text-sm font-semibold text-[#0070e0] hover:underline">
-                  <Link href="/forgot-password">Forgot password?</Link>
+                  <Link href="">Forgot password?</Link>
                 </button>
               </div>
               <div>
