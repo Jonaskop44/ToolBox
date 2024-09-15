@@ -8,6 +8,8 @@ import { Button, Checkbox, Input } from "@nextui-org/react";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import Link from "next/link";
+import { toast } from "sonner";
+import Cookies from "js-cookie";
 
 const apiClient = new ApiClient();
 type Variant = "LOGIN" | "SIGNUP";
@@ -81,6 +83,27 @@ const Home = () => {
 
     if (variant === "LOGIN") {
       const response = await apiClient.auth.login.post(data);
+      if (response.status === false) {
+        toast.error("Invalid credentials");
+      } else {
+        toast.success("Login successful");
+        if (data.rememberMe) {
+          Cookies.set("accessToken", response.data.backendTokens.accessToken, {
+            expires: 1,
+          });
+          Cookies.set(
+            "refreshToken",
+            response.data.backendTokens.refreshToken,
+            {
+              expires: 7,
+            }
+          );
+        } else {
+          Cookies.set("accessToken", response.data.backendTokens.accessToken);
+        }
+        window.location.reload();
+      }
+      setIsLoading(false);
     }
   };
 
