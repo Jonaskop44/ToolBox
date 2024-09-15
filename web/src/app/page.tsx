@@ -2,7 +2,7 @@
 
 import ApiClient from "@/api";
 import { motion } from "framer-motion";
-import { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import Image from "next/image";
 import { Button, Checkbox, Input } from "@nextui-org/react";
 import { FaRegEye } from "react-icons/fa";
@@ -75,6 +75,15 @@ const Home = () => {
     }
   }, [isInvalidEmail, isUsernameValid, isPasswordValid, variant]);
 
+  const onSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsLoading(true);
+
+    if (variant === "LOGIN") {
+      const response = await apiClient.auth.login.post(data);
+    }
+  };
+
   return (
     <>
       <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-100 h-screen">
@@ -94,7 +103,7 @@ const Home = () => {
               : "Create an account"}
           </h2>
           <div className="bg-white px-4 py-8 shadow-2xl sm:rounded-lg sm:px-10">
-            <form className="space-y-6">
+            <form onSubmit={onSubmit} className="space-y-6">
               {variant == "SIGNUP" && (
                 <Input
                   label="Username"

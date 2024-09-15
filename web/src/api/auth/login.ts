@@ -12,8 +12,7 @@ export default class Login {
         password: user.password,
       })
       .then((response) => {
-        if (response.status !== 201)
-          return { status: false, data: null, message: response.data.message };
+        if (response.status !== 201) return { status: false, data: null };
         const data = response.data;
 
         const { setUser } = useUserStore.getState();
