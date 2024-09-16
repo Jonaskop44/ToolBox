@@ -1,6 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { DiscordService } from './discord.service';
-import { DiscordStartBotDto } from './dto/discord.dto';
+import {
+  DiscordMassCreateChannelsDto,
+  DiscordStartBotDto,
+} from './dto/discord.dto';
 
 @Controller('discord')
 export class DiscordController {
@@ -14,5 +17,10 @@ export class DiscordController {
   @Post('stopBot')
   async stopBot() {
     return this.discordService.stopBot();
+  }
+
+  @Post('massCreateChannels')
+  async massCreateChannels(@Body() dto: DiscordMassCreateChannelsDto) {
+    return this.discordService.massCreateChannels(dto);
   }
 }

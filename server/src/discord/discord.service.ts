@@ -1,6 +1,9 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { Client } from 'discord.js';
-import { DiscordStartBotDto } from './dto/discord.dto';
+import { ChannelType, Client } from 'discord.js';
+import {
+  DiscordMassCreateChannelsDto,
+  DiscordStartBotDto,
+} from './dto/discord.dto';
 
 @Injectable()
 export class DiscordService {
@@ -33,5 +36,40 @@ export class DiscordService {
       .catch((error) => {
         throw new ConflictException('Bot is not running');
       });
+  }
+
+  async massCreateChannels(dto: DiscordMassCreateChannelsDto) {
+    const guild = await this.client.guilds.fetch(dto.guildId).catch((error) => {
+      throw new ConflictException('The guild does not exist');
+    });
+    if (!guild) {
+      throw new ConflictException('The guild does not exist');
+    }
+
+    // Create channels
+    let createdChannels = 0;
+    for (let i = 1; i <= dto.amount; i++) {
+      if (dto.delay > 0) {
+        await new Promise((resolve) => setTimeout(resolve, dto.delay));
+      }
+
+      try {
+        guild.channels.create({
+          name: dto.channelName + i,
+          type: ChannelType.GuildText,
+          reason: 'Mass create channels',
+        });
+
+        createdChannels++;
+      } catch (error) {
+        throw new ConflictException(
+          'An error occured while creating the channels',
+        );
+      }
+    }
+
+    return {
+      message: `${createdChannels} channels were successfully created.`,
+    };
   }
 }
