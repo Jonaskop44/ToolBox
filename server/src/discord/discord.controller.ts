@@ -10,4 +10,9 @@ export class DiscordController {
   async startBot(@Body() dto: DiscordStartBotDto) {
     return this.discordService.startBot(dto);
   }
+
+  @Post('stopBot')
+  async stopBot() {
+    return this.discordService.stopBot();
+  }
 }
