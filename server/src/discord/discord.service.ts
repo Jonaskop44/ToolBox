@@ -1,19 +1,16 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Client } from 'discord.js';
+import { DiscordStartBotDto } from './dto/discord.dto';
 
 @Injectable()
-export class DiscordService implements OnModuleInit {
+export class DiscordService {
   constructor(private readonly client: Client) {}
 
-  async onModuleInit() {
-    await this.startBot();
-  }
-
-  async startBot() {
+  async startBot(dto: DiscordStartBotDto) {
     this.client.once('ready', () => {
       console.log('Bot is online!');
     });
 
-    await this.client.login('');
+    await this.client.login(dto.token);
   }
 }
