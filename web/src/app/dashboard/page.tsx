@@ -1,9 +1,9 @@
 const Dashboard = () => {
   return (
-    <div>
-      <h1 className="flex justify-center items-center h-screen font-extrabold text-4xl">
-        Dashboard
-      </h1>
+    <div className="flex items-center justify-center h-screen bg-fixed bg-center bg-cover bg-image">
+      <div className="absolute top-0 left-0 right-0 bottom-0 bg-black/65 ">
+        <h1>hallo</h1>
+      </div>
     </div>
   );
 };

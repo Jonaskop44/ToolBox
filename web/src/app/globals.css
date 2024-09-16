@@ -7,3 +7,9 @@ body,
 :root {
   scroll-behavior: smooth;
 }
+
+
+.bg-image {
+  background-image: url("/images/background.jpg");
+  
+}
