@@ -4,32 +4,22 @@ export class DiscordStartBotDto {
   @IsString()
   @IsNotEmpty()
   readonly token: string;
-}
 
-export class DiscordMassCreateChannelsDto {
   @IsString()
   @IsNotEmpty()
   readonly guildId: string;
 
+  @IsNumber()
+  @IsNotEmpty()
+  readonly delay: number;
+}
+
+export class DiscordMassCreateChannelsDto {
   @IsNumber()
   @IsNotEmpty()
   readonly amount: number;
 
-  @IsNumber()
-  @IsNotEmpty()
-  readonly delay: number;
-
   @IsString()
   @IsNotEmpty()
   readonly channelName: string;
-}
-
-export class DiscordBanAllMembersDto {
-  @IsString()
-  @IsNotEmpty()
-  readonly guildId: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  readonly delay: number;
 }

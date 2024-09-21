@@ -1,13 +1,15 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { ChannelType, Client } from 'discord.js';
+import { ChannelType, Client, Guild } from 'discord.js';
 import {
-  DiscordBanAllMembersDto,
   DiscordMassCreateChannelsDto,
   DiscordStartBotDto,
 } from './dto/discord.dto';
 
 @Injectable()
 export class DiscordService {
+  private guild: Guild;
+  private delay: number;
+
   constructor(private readonly client: Client) {}
 
   async startBot(dto: DiscordStartBotDto) {
@@ -18,7 +20,28 @@ export class DiscordService {
     }
 
     return new Promise(async (resolve, reject) => {
-      this.client.once('ready', () => {
+      this.client.once('ready', async () => {
+        try {
+          //Check if the guild exists and the delay is valid
+          const guild = await this.client.guilds
+            .fetch(dto.guildId)
+            .catch((error) => {
+              throw new ConflictException('The guild does not exist');
+            });
+          if (!guild) {
+            throw new ConflictException('The guild does not exist');
+          }
+
+          if (dto.delay < 0) {
+            throw new ConflictException('Delay must be a positive number');
+          }
+
+          this.guild = guild;
+          this.delay = dto.delay;
+        } catch (error) {
+          throw new ConflictException(error);
+        }
+
         resolve({
           message: 'Bot is ready',
         });
@@ -52,32 +75,18 @@ export class DiscordService {
     });
   }
 
-  async banAllMembers(dto: DiscordBanAllMembersDto) {
-    const guild = await this.client.guilds.fetch(dto.guildId).catch((error) => {
-      throw new ConflictException('The guild does not exist');
-    });
-    if (!guild) {
-      throw new ConflictException('The guild does not exist');
-    }
-  }
+  async banAllMembers() {}
 
   async massCreateChannels(dto: DiscordMassCreateChannelsDto) {
-    const guild = await this.client.guilds.fetch(dto.guildId).catch((error) => {
-      throw new ConflictException('The guild does not exist');
-    });
-    if (!guild) {
-      throw new ConflictException('The guild does not exist');
-    }
-
     // Create channels
     let createdChannels = 0;
     for (let i = 1; i <= dto.amount; i++) {
-      if (dto.delay > 0) {
-        await new Promise((resolve) => setTimeout(resolve, dto.delay));
+      if (this.delay > 0) {
+        await new Promise((resolve) => setTimeout(resolve, this.delay));
       }
 
       try {
-        guild.channels.create({
+        this.guild.channels.create({
           name: dto.channelName + i,
           type: ChannelType.GuildText,
           reason: 'Mass create channels',
