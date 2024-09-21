@@ -3,6 +3,7 @@ import { DiscordService } from './discord.service';
 import {
   DiscordMassCreateChannelsDto,
   DiscordMassCreateRolesDto,
+  DiscordSetBotValuesDto,
   DiscordStartBotDto,
 } from './dto/discord.dto';
 
@@ -13,6 +14,11 @@ export class DiscordController {
   @Post('startBot')
   async startBot(@Body() dto: DiscordStartBotDto) {
     return this.discordService.startBot(dto);
+  }
+
+  @Post('setBotValues')
+  async setBotValues(@Body() dto: DiscordSetBotValuesDto) {
+    return this.discordService.setBotValues(dto);
   }
 
   @Post('stopBot')
