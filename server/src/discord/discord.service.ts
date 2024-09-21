@@ -36,6 +36,10 @@ export class DiscordService {
 
     this.guild = guild;
     this.delay = dto.delay;
+
+    return {
+      message: 'Bot values set',
+    };
   }
 
   async startBot(dto: DiscordStartBotDto) {
