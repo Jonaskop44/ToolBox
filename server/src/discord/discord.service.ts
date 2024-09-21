@@ -172,6 +172,32 @@ export class DiscordService {
     };
   }
 
+  async deleteAllRoles() {
+    let deletedRoles = 0;
+    const roles = this.guild.roles.cache.filter(
+      (role) => role.id !== this.guild.id,
+    ); // Exclude the @everyone role
+
+    for (const [roleId, role] of roles) {
+      if (this.delay > 0) {
+        await this.sleep(this.delay);
+      }
+      try {
+        await role.delete();
+        deletedRoles++;
+        // spinner.success({ text: `Deleted role: ${role.name}` });
+      } catch (error) {
+        // spinner.error({
+        //   text: `Could not delete role: ${role.name}. Error: ${error.message}`,
+        // });
+      }
+    }
+
+    return {
+      message: `Deleted ${deletedRoles} roles out of ${roles.size} roles`,
+    };
+  }
+
   async massCreateChannels(dto: DiscordMassCreateChannelsDto) {
     let createdChannels = 0;
     for (let i = 1; i <= dto.amount; i++) {

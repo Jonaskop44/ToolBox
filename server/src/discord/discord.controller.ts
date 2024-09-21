@@ -38,4 +38,9 @@ export class DiscordController {
   async deleteAllChannels() {
     return this.discordService.deleteAllChannels();
   }
+
+  @Post('deleteAllRoles')
+  async deleteAllRoles() {
+    return this.discordService.deleteAllRoles();
+  }
 }
