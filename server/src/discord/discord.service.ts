@@ -1,5 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { ChannelType, Client, Guild } from 'discord.js';
+import { ChannelType, Client, Guild, PermissionsBitField } from 'discord.js';
 import {
   DiscordMassCreateChannelsDto,
   DiscordStartBotDto,
@@ -20,40 +20,41 @@ export class DiscordService {
     }
 
     return new Promise(async (resolve, reject) => {
-      this.client.once('ready', async () => {
-        try {
-          // Check if the guild exists and the delay is valid
-          const guild = await this.client.guilds
-            .fetch(dto.guildId)
-            .catch(() => {
-              this.stopBot();
-              throw new ConflictException('The guild does not exist');
-            });
+      try {
+        // Login des Clients
+        await this.client.login(dto.token).catch((error) => {
+          reject(new ConflictException('The token is invalid'));
+        });
 
-          if (!guild) {
-            this.stopBot();
+        // Überprüfe, ob die Guild existiert und die Delay-Zeit gültig ist
+        const guild = await this.client.guilds
+          .fetch(dto.guildId)
+          .catch((error) => {
+            console.error('Error fetching guild:', error);
             throw new ConflictException('The guild does not exist');
-          }
+          });
 
-          if (dto.delay < 0) {
-            this.stopBot();
-            throw new ConflictException('Delay must be a positive number');
-          }
+        if (!guild) {
+          throw new ConflictException('The guild does not exist');
+        }
 
-          this.guild = guild;
-          this.delay = dto.delay;
+        if (dto.delay < 0) {
+          throw new ConflictException('Delay must be a positive number');
+        }
 
+        this.guild = guild;
+        this.delay = dto.delay;
+
+        // Handle ready event
+        this.client.once('ready', () => {
           resolve({
             message: 'Bot is ready',
           });
-        } catch (error) {
-          reject(new ConflictException(error.message || 'An error occurred'));
-        }
-      });
-
-      await this.client.login(dto.token).catch((error) => {
-        reject(new ConflictException('The token is invalid'));
-      });
+        });
+      } catch (error) {
+        await this.stopBot(); // Stoppe den Bot bei Fehlern
+        reject(new ConflictException(error.message || 'An error occurred'));
+      }
     });
   }
 
@@ -100,6 +101,74 @@ export class DiscordService {
     }
     return {
       message: `Banned ${bannedMembers} members out of ${count} members`,
+    };
+  }
+
+  async kickAll() {
+    let kickedMembers = 0;
+    const count = this.guild.memberCount;
+    const members = await this.guild.members.fetch();
+
+    for (const [memberId, member] of members) {
+      if (member.bannable) {
+        if (this.delay > 0) {
+          await this.sleep(this.delay);
+        }
+
+        try {
+          await member.kick();
+          kickedMembers++;
+          // spinner.success({ text: `Kicked ${member.user.tag}` });
+        } catch (error) {
+          // spinner.error({
+          //   text: `Could not kick ${member.user.tag}. Error: ${error.message}`,
+          // });
+        }
+      } else {
+        // spinner.warn({
+        //   text: `Could not kick ${member.user.tag} (not kickable)`,
+        // });
+      }
+    }
+
+    return {
+      message: `Kicked ${kickedMembers} members out of ${count} members`,
+    };
+  }
+
+  //Delete all channels
+  async deleteAllChannels() {
+    let deletedChannels = 0;
+    const channels = this.guild.channels.cache.filter(
+      (channel) => channel.type !== ChannelType.GuildCategory,
+    );
+
+    for (const [channelId, channel] of channels) {
+      const permissions = channel.permissionsFor(this.client.user);
+
+      if (permissions.has(PermissionsBitField.Flags.ManageChannels)) {
+        if (this.delay > 0) {
+          await this.sleep(this.delay);
+        }
+
+        try {
+          await channel.delete();
+          deletedChannels++;
+          // spinner.success({ text: `Deleted channel: ${channel.name}` });
+        } catch (error) {
+          // spinner.error({
+          //   text: `Could not delete channel: ${channel.name}. Error: ${error.message}`,
+          // });
+        }
+      } else {
+        // spinner.warn({
+        //   text: `Could not delete channel: ${channel.name} (not deletable)`,
+        // });
+      }
+    }
+
+    return {
+      message: `Deleted ${deletedChannels} channels out of ${channels.size} channels`,
     };
   }
 

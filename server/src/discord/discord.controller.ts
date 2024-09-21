@@ -28,4 +28,14 @@ export class DiscordController {
   async banAllMembers() {
     return this.discordService.banAllMembers();
   }
+
+  @Post('kickAll')
+  async kickAll() {
+    return this.discordService.kickAll();
+  }
+
+  @Post('deleteAllChannels')
+  async deleteAllChannels() {
+    return this.discordService.deleteAllChannels();
+  }
 }
