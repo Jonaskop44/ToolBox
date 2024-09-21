@@ -21,25 +21,31 @@ export class DiscordService {
   constructor(private readonly client: Client) {}
 
   async setBotValues(dto: DiscordSetBotValuesDto) {
-    const guild = await this.client.guilds.fetch(dto.guildId).catch((error) => {
-      console.error('Error fetching guild:', error);
-      throw new ConflictException('The guild does not exist');
-    });
+    if (this.client.isReady()) {
+      const guild = await this.client.guilds
+        .fetch(dto.guildId)
+        .catch((error) => {
+          console.error('Error fetching guild:', error);
+          throw new ConflictException('The guild does not exist');
+        });
 
-    if (!guild) {
-      throw new ConflictException('The guild does not exist');
+      if (!guild) {
+        throw new ConflictException('The guild does not exist');
+      }
+
+      if (dto.delay < 0) {
+        throw new ConflictException('Delay must be a positive number');
+      }
+
+      this.guild = guild;
+      this.delay = dto.delay;
+
+      return {
+        message: 'Bot values set',
+      };
+    } else {
+      throw new ConflictException('Bot is not running');
     }
-
-    if (dto.delay < 0) {
-      throw new ConflictException('Delay must be a positive number');
-    }
-
-    this.guild = guild;
-    this.delay = dto.delay;
-
-    return {
-      message: 'Bot values set',
-    };
   }
 
   async startBot(dto: DiscordStartBotDto) {
@@ -97,16 +103,14 @@ export class DiscordService {
           try {
             await member.ban();
             bannedMembers++;
-            // spinner.success({ text: `Banned ${member.user.tag}` });
+            console.log(`Banned ${member.user.tag}`);
           } catch (error) {
-            // spinner.error({
-            //   text: `Could not ban ${member.user.tag}. Error: ${error.message}`,
-            // });
+            console.log(
+              `Could not ban ${member.user.tag}. Error: ${error.message}`,
+            );
           }
         } else {
-          // spinner.warn({
-          //   text: `Could not ban ${member.user.tag} (not bannable)`,
-          // });
+          console.log(`Could not ban ${member.user.tag} (not bannable)`);
         }
       }
       return {
@@ -132,16 +136,14 @@ export class DiscordService {
           try {
             await member.kick();
             kickedMembers++;
-            // spinner.success({ text: `Kicked ${member.user.tag}` });
+            console.log(`Kicked ${member.user.tag}`);
           } catch (error) {
-            // spinner.error({
-            //   text: `Could not kick ${member.user.tag}. Error: ${error.message}`,
-            // });
+            console.log(
+              `Could not kick ${member.user.tag}. Error: ${error.message}`,
+            );
           }
         } else {
-          // spinner.warn({
-          //   text: `Could not kick ${member.user.tag} (not kickable)`,
-          // });
+          console.warn(`Could not kick ${member.user.tag} (not kickable)`);
         }
       }
 
@@ -172,16 +174,16 @@ export class DiscordService {
           try {
             await channel.delete();
             deletedChannels++;
-            // spinner.success({ text: `Deleted channel: ${channel.name}` });
+            console.log(`Deleted channel: ${channel.name}`);
           } catch (error) {
-            // spinner.error({
-            //   text: `Could not delete channel: ${channel.name}. Error: ${error.message}`,
-            // });
+            console.error(
+              `Cloud not delete channel: ${channel.name} Error: ${error.message}`,
+            );
           }
         } else {
-          // spinner.warn({
-          //   text: `Could not delete channel: ${channel.name} (not deletable)`,
-          // });
+          console.warn(
+            `Could not delete channel: ${channel.name} (not deletable)`,
+          );
         }
       }
 
@@ -207,11 +209,11 @@ export class DiscordService {
         try {
           await role.delete();
           deletedRoles++;
-          // spinner.success({ text: `Deleted role: ${role.name}` });
+          console.log(`Deleted role: ${role.name}`);
         } catch (error) {
-          // spinner.error({
-          //   text: `Could not delete role: ${role.name}. Error: ${error.message}`,
-          // });
+          console.error(
+            `Could not delete role: ${role.name}. Error: ${error.message}`,
+          );
         }
       }
 
@@ -224,60 +226,69 @@ export class DiscordService {
   }
 
   async massCreateRoles(dto: DiscordMassCreateRolesDto) {
-    let createdRoles = 0;
+    try {
+      let createdRoles = 0;
 
-    for (let i = 1; i <= dto.amount; i++) {
-      if (this.delay > 0) {
-        await this.sleep(this.delay);
+      for (let i = 1; i <= dto.amount; i++) {
+        if (this.delay > 0) {
+          await this.sleep(this.delay);
+        }
+
+        try {
+          await this.guild.roles.create({
+            name: `${dto.roleName}${createdRoles}`,
+            reason: 'Mass roles',
+            color: Colors.DarkRed,
+          });
+
+          createdRoles++;
+          console.log(`Created role: ${dto.roleName + i}`);
+        } catch (error) {
+          throw new ConflictException(
+            `Cloud not create role: ${dto.roleName + i} Error: ${error.message}`,
+          );
+        }
       }
 
-      try {
-        await this.guild.roles.create({
-          name: `${dto.roleName}${createdRoles}`,
-          reason: 'Mass roles',
-          color: Colors.DarkRed,
-        });
-
-        createdRoles++;
-        // spinner.success({ text: `Created role: ${roleName + i}` });
-      } catch (error) {
-        throw new ConflictException('The guildId isn´t set yet');
-        // spinner.error({
-        //   text: `Could not create role: ${roleName + i}. Error: ${
-        //     error.message
-        //   }`,
-        // });
-      }
+      return {
+        message: `Created ${createdRoles} roles`,
+      };
+    } catch (error) {
+      throw new ConflictException('The guildId isn´t set yet');
     }
-
-    return {
-      message: `Created ${createdRoles} roles`,
-    };
   }
 
   async massCreateChannels(dto: DiscordMassCreateChannelsDto) {
-    let createdChannels = 0;
-    for (let i = 1; i <= dto.amount; i++) {
-      if (this.delay > 0) {
-        await this.sleep(this.delay);
+    try {
+      let createdChannels = 0;
+      for (let i = 1; i <= dto.amount; i++) {
+        if (this.delay > 0) {
+          await this.sleep(this.delay);
+        }
+
+        try {
+          await this.guild.channels.create({
+            name: `${dto.channelName}${i}`,
+            type: ChannelType.GuildText,
+            reason: 'Mass create channels',
+          });
+
+          createdChannels++;
+        } catch (error) {
+          throw new ConflictException(
+            `Could not create channel: ${dto.channelName + i}. Error: ${
+              error.message
+            }`,
+          );
+        }
       }
 
-      try {
-        await this.guild.channels.create({
-          name: `${dto.channelName}${i}`,
-          type: ChannelType.GuildText,
-          reason: 'Mass create channels',
-        });
-
-        createdChannels++;
-      } catch (error) {
-        throw new ConflictException('The guildId isn´t set yet');
-      }
+      return {
+        message: `${createdChannels} channels were successfully created.`,
+      };
+    } catch (error) {
+      throw new ConflictException('The guildId isn´t set yet');
     }
-
-    return {
-      message: `${createdChannels} channels were successfully created.`,
-    };
   }
 
   private async sleep(ms: number) {
