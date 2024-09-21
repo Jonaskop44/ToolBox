@@ -178,29 +178,33 @@ export class DiscordService {
   }
 
   async deleteAllRoles() {
-    let deletedRoles = 0;
-    const roles = this.guild.roles.cache.filter(
-      (role) => role.id !== this.guild.id,
-    ); // Exclude the @everyone role
+    try {
+      let deletedRoles = 0;
+      const roles = this.guild.roles.cache.filter(
+        (role) => role.id !== this.guild.id,
+      ); // Exclude the @everyone role
 
-    for (const [roleId, role] of roles) {
-      if (this.delay > 0) {
-        await this.sleep(this.delay);
+      for (const [roleId, role] of roles) {
+        if (this.delay > 0) {
+          await this.sleep(this.delay);
+        }
+        try {
+          await role.delete();
+          deletedRoles++;
+          // spinner.success({ text: `Deleted role: ${role.name}` });
+        } catch (error) {
+          // spinner.error({
+          //   text: `Could not delete role: ${role.name}. Error: ${error.message}`,
+          // });
+        }
       }
-      try {
-        await role.delete();
-        deletedRoles++;
-        // spinner.success({ text: `Deleted role: ${role.name}` });
-      } catch (error) {
-        // spinner.error({
-        //   text: `Could not delete role: ${role.name}. Error: ${error.message}`,
-        // });
-      }
+
+      return {
+        message: `Deleted ${deletedRoles} roles out of ${roles.size} roles`,
+      };
+    } catch (error) {
+      throw new ConflictException('An error occurred while deleting the roles');
     }
-
-    return {
-      message: `Deleted ${deletedRoles} roles out of ${roles.size} roles`,
-    };
   }
 
   async massCreateRoles(dto: DiscordMassCreateRolesDto) {
@@ -221,6 +225,9 @@ export class DiscordService {
         createdRoles++;
         // spinner.success({ text: `Created role: ${roleName + i}` });
       } catch (error) {
+        throw new ConflictException(
+          'An error occurred while creating the channels',
+        );
         // spinner.error({
         //   text: `Could not create role: ${roleName + i}. Error: ${
         //     error.message
