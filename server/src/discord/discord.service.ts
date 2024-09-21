@@ -16,7 +16,7 @@ import {
 @Injectable()
 export class DiscordService {
   private guild: Guild;
-  private delay: number;
+  private delay: number = 0;
 
   constructor(private readonly client: Client) {}
 
@@ -79,102 +79,114 @@ export class DiscordService {
   }
 
   async banAllMembers() {
-    let bannedMembers = 0;
-    const count = this.guild.memberCount;
-    const members = await this.guild.members.fetch();
+    try {
+      let bannedMembers = 0;
+      const count = this.guild.memberCount;
+      const members = await this.guild.members.fetch();
 
-    for (const [memberId, member] of members) {
-      if (member.bannable) {
-        if (this.delay > 0) {
-          await this.sleep(this.delay);
-        }
+      for (const [memberId, member] of members) {
+        if (member.bannable) {
+          if (this.delay > 0) {
+            await this.sleep(this.delay);
+          }
 
-        try {
-          await member.ban();
-          bannedMembers++;
-          // spinner.success({ text: `Banned ${member.user.tag}` });
-        } catch (error) {
-          // spinner.error({
-          //   text: `Could not ban ${member.user.tag}. Error: ${error.message}`,
+          try {
+            await member.ban();
+            bannedMembers++;
+            // spinner.success({ text: `Banned ${member.user.tag}` });
+          } catch (error) {
+            // spinner.error({
+            //   text: `Could not ban ${member.user.tag}. Error: ${error.message}`,
+            // });
+          }
+        } else {
+          // spinner.warn({
+          //   text: `Could not ban ${member.user.tag} (not bannable)`,
           // });
         }
-      } else {
-        // spinner.warn({
-        //   text: `Could not ban ${member.user.tag} (not bannable)`,
-        // });
       }
+      return {
+        message: `Banned ${bannedMembers} members out of ${count} members`,
+      };
+    } catch (error) {
+      throw new ConflictException('The guildId isn´t set yet');
     }
-    return {
-      message: `Banned ${bannedMembers} members out of ${count} members`,
-    };
   }
 
   async kickAll() {
-    let kickedMembers = 0;
-    const count = this.guild.memberCount;
-    const members = await this.guild.members.fetch();
+    try {
+      let kickedMembers = 0;
+      const count = this.guild.memberCount;
+      const members = await this.guild.members.fetch();
 
-    for (const [memberId, member] of members) {
-      if (member.bannable) {
-        if (this.delay > 0) {
-          await this.sleep(this.delay);
-        }
+      for (const [memberId, member] of members) {
+        if (member.bannable) {
+          if (this.delay > 0) {
+            await this.sleep(this.delay);
+          }
 
-        try {
-          await member.kick();
-          kickedMembers++;
-          // spinner.success({ text: `Kicked ${member.user.tag}` });
-        } catch (error) {
-          // spinner.error({
-          //   text: `Could not kick ${member.user.tag}. Error: ${error.message}`,
+          try {
+            await member.kick();
+            kickedMembers++;
+            // spinner.success({ text: `Kicked ${member.user.tag}` });
+          } catch (error) {
+            // spinner.error({
+            //   text: `Could not kick ${member.user.tag}. Error: ${error.message}`,
+            // });
+          }
+        } else {
+          // spinner.warn({
+          //   text: `Could not kick ${member.user.tag} (not kickable)`,
           // });
         }
-      } else {
-        // spinner.warn({
-        //   text: `Could not kick ${member.user.tag} (not kickable)`,
-        // });
       }
-    }
 
-    return {
-      message: `Kicked ${kickedMembers} members out of ${count} members`,
-    };
+      return {
+        message: `Kicked ${kickedMembers} members out of ${count} members`,
+      };
+    } catch (error) {
+      throw new ConflictException('The guildId isn´t set yet');
+    }
   }
 
   //Delete all channels
   async deleteAllChannels() {
-    let deletedChannels = 0;
-    const channels = this.guild.channels.cache.filter(
-      (channel) => channel.type !== ChannelType.GuildCategory,
-    );
+    try {
+      let deletedChannels = 0;
+      const channels = this.guild.channels.cache.filter(
+        (channel) => channel.type !== ChannelType.GuildCategory,
+      );
 
-    for (const [channelId, channel] of channels) {
-      const permissions = channel.permissionsFor(this.client.user);
+      for (const [channelId, channel] of channels) {
+        const permissions = channel.permissionsFor(this.client.user);
 
-      if (permissions.has(PermissionsBitField.Flags.ManageChannels)) {
-        if (this.delay > 0) {
-          await this.sleep(this.delay);
-        }
+        if (permissions.has(PermissionsBitField.Flags.ManageChannels)) {
+          if (this.delay > 0) {
+            await this.sleep(this.delay);
+          }
 
-        try {
-          await channel.delete();
-          deletedChannels++;
-          // spinner.success({ text: `Deleted channel: ${channel.name}` });
-        } catch (error) {
-          // spinner.error({
-          //   text: `Could not delete channel: ${channel.name}. Error: ${error.message}`,
+          try {
+            await channel.delete();
+            deletedChannels++;
+            // spinner.success({ text: `Deleted channel: ${channel.name}` });
+          } catch (error) {
+            // spinner.error({
+            //   text: `Could not delete channel: ${channel.name}. Error: ${error.message}`,
+            // });
+          }
+        } else {
+          // spinner.warn({
+          //   text: `Could not delete channel: ${channel.name} (not deletable)`,
           // });
         }
-      } else {
-        // spinner.warn({
-        //   text: `Could not delete channel: ${channel.name} (not deletable)`,
-        // });
       }
-    }
 
-    return {
-      message: `Deleted ${deletedChannels} channels out of ${channels.size} channels`,
-    };
+      return {
+        message: `Deleted ${deletedChannels} channels out of ${channels.size} channels`,
+      };
+    } catch (error) {
+      throw new ConflictException('The guildId isn´t set yet');
+    }
   }
 
   async deleteAllRoles() {
@@ -203,7 +215,7 @@ export class DiscordService {
         message: `Deleted ${deletedRoles} roles out of ${roles.size} roles`,
       };
     } catch (error) {
-      throw new ConflictException('An error occurred while deleting the roles');
+      throw new ConflictException('The guildId isn´t set yet');
     }
   }
 
@@ -225,9 +237,7 @@ export class DiscordService {
         createdRoles++;
         // spinner.success({ text: `Created role: ${roleName + i}` });
       } catch (error) {
-        throw new ConflictException(
-          'An error occurred while creating the channels',
-        );
+        throw new ConflictException('The guildId isn´t set yet');
         // spinner.error({
         //   text: `Could not create role: ${roleName + i}. Error: ${
         //     error.message
@@ -257,9 +267,7 @@ export class DiscordService {
 
         createdChannels++;
       } catch (error) {
-        throw new ConflictException(
-          'An error occurred while creating the channels',
-        );
+        throw new ConflictException('The guildId isn´t set yet');
       }
     }
 
