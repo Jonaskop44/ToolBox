@@ -59,8 +59,6 @@ export class DiscordService {
     if (!guild) {
       throw new ConflictException('The guild does not exist');
     }
-
-    
   }
 
   async massCreateChannels(dto: DiscordMassCreateChannelsDto) {
