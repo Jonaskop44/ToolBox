@@ -23,6 +23,6 @@ import { Client, GatewayIntentBits } from 'discord.js';
       },
     },
   ],
-  exports: [Client], // Optional, falls du den Client woanders verwenden willst
+  exports: [Client],
 })
 export class DiscordModule {}

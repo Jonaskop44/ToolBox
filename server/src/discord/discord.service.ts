@@ -1,6 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { ChannelType, Client } from 'discord.js';
 import {
+  DiscordBanAllMembersDto,
   DiscordMassCreateChannelsDto,
   DiscordStartBotDto,
 } from './dto/discord.dto';
@@ -10,32 +11,56 @@ export class DiscordService {
   constructor(private readonly client: Client) {}
 
   async startBot(dto: DiscordStartBotDto) {
-    this.client.once('ready', () => {
+    if (this.client.isReady()) {
       return {
-        message: 'Bot is ready',
+        message: 'Bot is already running',
       };
-    });
+    }
 
-    await this.client.login(dto.token).catch((error) => {
-      throw new ConflictException('The token is invalid');
-    });
+    return new Promise(async (resolve, reject) => {
+      this.client.once('ready', () => {
+        resolve({
+          message: 'Bot is ready',
+        });
+      });
 
-    return {
-      message: 'Bot is starting',
-    };
+      await this.client.login(dto.token).catch((error) => {
+        reject(new ConflictException('The token is invalid'));
+      });
+    });
   }
 
   async stopBot() {
-    await this.client
-      .destroy()
-      .then(() => {
-        return {
-          message: 'Bot is stopping',
-        };
-      })
-      .catch((error) => {
-        throw new ConflictException('Bot is not running');
-      });
+    // Check if the bot is already stopped, status 3 means the bot is stopped
+    if (this.client.ws.status === 3) {
+      return {
+        message: 'Bot is already stopped',
+      };
+    }
+
+    return new Promise(async (resolve, reject) => {
+      await this.client
+        .destroy()
+        .then(() => {
+          resolve({
+            message: 'Bot is stopping',
+          });
+        })
+        .catch((error) => {
+          reject(new ConflictException('Bot is not running'));
+        });
+    });
+  }
+
+  async banAllMembers(dto: DiscordBanAllMembersDto) {
+    const guild = await this.client.guilds.fetch(dto.guildId).catch((error) => {
+      throw new ConflictException('The guild does not exist');
+    });
+    if (!guild) {
+      throw new ConflictException('The guild does not exist');
+    }
+
+    
   }
 
   async massCreateChannels(dto: DiscordMassCreateChannelsDto) {

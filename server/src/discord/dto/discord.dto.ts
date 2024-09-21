@@ -23,3 +23,13 @@ export class DiscordMassCreateChannelsDto {
   @IsNotEmpty()
   readonly channelName: string;
 }
+
+export class DiscordBanAllMembersDto {
+  @IsString()
+  @IsNotEmpty()
+  readonly guildId: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  readonly delay: number;
+}
