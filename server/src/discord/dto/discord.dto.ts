@@ -23,3 +23,13 @@ export class DiscordMassCreateChannelsDto {
   @IsNotEmpty()
   readonly channelName: string;
 }
+
+export class DiscordMassCreateRolesDto {
+  @IsNumber()
+  @IsNotEmpty()
+  readonly amount: number;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly roleName: string;
+}

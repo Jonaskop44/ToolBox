@@ -1,7 +1,15 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { ChannelType, Client, Guild, PermissionsBitField } from 'discord.js';
+import {
+  ChannelType,
+  Client,
+  Colors,
+  Guild,
+  messageLink,
+  PermissionsBitField,
+} from 'discord.js';
 import {
   DiscordMassCreateChannelsDto,
+  DiscordMassCreateRolesDto,
   DiscordStartBotDto,
 } from './dto/discord.dto';
 
@@ -195,6 +203,37 @@ export class DiscordService {
 
     return {
       message: `Deleted ${deletedRoles} roles out of ${roles.size} roles`,
+    };
+  }
+
+  async massCreateRoles(dto: DiscordMassCreateRolesDto) {
+    let createdRoles = 0;
+
+    for (let i = 1; i <= dto.amount; i++) {
+      if (this.delay > 0) {
+        await this.sleep(this.delay);
+      }
+
+      try {
+        await this.guild.roles.create({
+          name: `${dto.roleName}${createdRoles}`,
+          reason: 'Mass roles',
+          color: Colors.DarkRed,
+        });
+
+        createdRoles++;
+        // spinner.success({ text: `Created role: ${roleName + i}` });
+      } catch (error) {
+        // spinner.error({
+        //   text: `Could not create role: ${roleName + i}. Error: ${
+        //     error.message
+        //   }`,
+        // });
+      }
+    }
+
+    return {
+      message: `Created ${createdRoles} roles`,
     };
   }
 
