@@ -23,4 +23,9 @@ export class DiscordController {
   async massCreateChannels(@Body() dto: DiscordMassCreateChannelsDto) {
     return this.discordService.massCreateChannels(dto);
   }
+
+  @Post('banAllMembers')
+  async banAllMembers() {
+    return this.discordService.banAllMembers();
+  }
 }
