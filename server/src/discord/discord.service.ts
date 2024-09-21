@@ -4,12 +4,12 @@ import {
   Client,
   Colors,
   Guild,
-  messageLink,
   PermissionsBitField,
 } from 'discord.js';
 import {
   DiscordMassCreateChannelsDto,
   DiscordMassCreateRolesDto,
+  DiscordSetBotValuesDto,
   DiscordStartBotDto,
 } from './dto/discord.dto';
 
@@ -20,6 +20,24 @@ export class DiscordService {
 
   constructor(private readonly client: Client) {}
 
+  async setBotValues(dto: DiscordSetBotValuesDto) {
+    const guild = await this.client.guilds.fetch(dto.guildId).catch((error) => {
+      console.error('Error fetching guild:', error);
+      throw new ConflictException('The guild does not exist');
+    });
+
+    if (!guild) {
+      throw new ConflictException('The guild does not exist');
+    }
+
+    if (dto.delay < 0) {
+      throw new ConflictException('Delay must be a positive number');
+    }
+
+    this.guild = guild;
+    this.delay = dto.delay;
+  }
+
   async startBot(dto: DiscordStartBotDto) {
     if (this.client.isReady()) {
       return {
@@ -29,38 +47,17 @@ export class DiscordService {
 
     return new Promise(async (resolve, reject) => {
       try {
-        // Login des Clients
         await this.client.login(dto.token).catch((error) => {
           reject(new ConflictException('The token is invalid'));
         });
 
-        // Überprüfe, ob die Guild existiert und die Delay-Zeit gültig ist
-        const guild = await this.client.guilds
-          .fetch(dto.guildId)
-          .catch((error) => {
-            console.error('Error fetching guild:', error);
-            throw new ConflictException('The guild does not exist');
-          });
-
-        if (!guild) {
-          throw new ConflictException('The guild does not exist');
-        }
-
-        if (dto.delay < 0) {
-          throw new ConflictException('Delay must be a positive number');
-        }
-
-        this.guild = guild;
-        this.delay = dto.delay;
-
-        // Handle ready event
         this.client.once('ready', () => {
           resolve({
             message: 'Bot is ready',
           });
         });
       } catch (error) {
-        await this.stopBot(); // Stoppe den Bot bei Fehlern
+        await this.stopBot();
         reject(new ConflictException(error.message || 'An error occurred'));
       }
     });
