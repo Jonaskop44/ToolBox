@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { NettoolsService } from './nettools.service';
 
 @Controller('nettools')
@@ -8,5 +8,17 @@ export class NettoolsController {
   @Get('ipinfo/:ip')
   async getIpInfo(@Param('ip') ip: string) {
     return this.nettoolsService.getIpInfo(ip);
+  }
+
+  @Get('portscan/:ip')
+  async scanPorts(
+    @Param('ip') ip: string,
+    @Query('startPort') startPort: string,
+    @Query('endPort') endPort: string,
+  ) {
+    const start = parseInt(startPort);
+    const end = parseInt(endPort);
+
+    return this.nettoolsService.scanPorts(ip, start, end);
   }
 }
