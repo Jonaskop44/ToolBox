@@ -86,7 +86,7 @@ const Particels = () => {
               enable: true,
               width: 800,
             },
-            value: 80,
+            value: 100, // number of starting particles
           },
           opacity: {
             value: 0.5,
