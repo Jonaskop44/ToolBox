@@ -8,8 +8,13 @@ body,
   scroll-behavior: smooth;
 }
 
-
 .bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
   background-image: url("/images/background.jpg");
-  
+  height: 100%;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
