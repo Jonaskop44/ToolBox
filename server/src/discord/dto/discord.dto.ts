@@ -35,3 +35,27 @@ export class DiscordSetBotValuesDto {
   @IsNotEmpty()
   readonly delay: number;
 }
+
+export class DiscordAccountMessageSpam {
+  @IsString()
+  @IsNotEmpty()
+  readonly token: string;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly channelId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly message: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  readonly amount: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  readonly delay: number;
+}
+
+

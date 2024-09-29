@@ -7,11 +7,13 @@ import {
   PermissionsBitField,
 } from 'discord.js';
 import {
+  DiscordAccountMessageSpam,
   DiscordMassCreateChannelsDto,
   DiscordMassCreateRolesDto,
   DiscordSetBotValuesDto,
   DiscordStartBotDto,
 } from './dto/discord.dto';
+import axios from 'axios';
 
 @Injectable()
 export class DiscordService {
@@ -288,6 +290,32 @@ export class DiscordService {
       };
     } catch (error) {
       throw new ConflictException('The guildId isn´t set yet');
+    }
+  }
+
+  async accountMessageSpam(dto: DiscordAccountMessageSpam) {
+    for (let i = 0; i < dto.amount; i++) {
+      await this.sleep(dto.delay);
+      await axios
+        .post(
+          `https://discord.com/api/v9/channels/${dto.channelId}/messages`,
+          {
+            content: dto.message,
+          },
+          {
+            headers: {
+              Authorization: dto.token,
+              'Content-Type': 'application/json',
+            },
+          },
+        )
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+          throw new ConflictException(error);
+        });
     }
   }
 

@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { DiscordService } from './discord.service';
 import {
+  DiscordAccountMessageSpam,
   DiscordMassCreateChannelsDto,
   DiscordMassCreateRolesDto,
   DiscordSetBotValuesDto,
@@ -54,5 +55,10 @@ export class DiscordController {
   @Post('deleteAllRoles')
   async deleteAllRoles() {
     return this.discordService.deleteAllRoles();
+  }
+
+  @Post('accountMessageSpam')
+  async accountMessageSpam(@Body() dto: DiscordAccountMessageSpam) {
+    return this.discordService.accountMessageSpam(dto);
   }
 }
