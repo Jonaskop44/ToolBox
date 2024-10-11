@@ -14,8 +14,8 @@ datasource db {
 }
 
 enum Role {
-  ADMIN
-  MODERATOR
+  VIP
+  PREMIUM
   USER
 }
 
