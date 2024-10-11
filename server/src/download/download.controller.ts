@@ -28,4 +28,19 @@ export class DownloadController {
     );
     res.download(songPath);
   }
+
+  @Get('spotify/playlist/:url')
+  async downloadSpotifyPlaylist(
+    @Param('url') url: string,
+    @Query('clientId') clientId: string,
+    @Query('clientSecret') clientSecret: string,
+    @Res() res: Response,
+  ) {
+    const decodedUrl = decodeURIComponent(url);
+    const songPath = await this.downloadService.downloadSpotifyPlaylist(
+      decodedUrl,
+      clientId,
+      clientSecret,
+    );
+  }
 }
