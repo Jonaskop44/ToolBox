@@ -10,6 +10,10 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import Link from "next/link";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
+import { MdOutlineEmail } from "react-icons/md";
+import { MdVpnKey } from "react-icons/md";
+import { CiUser } from "react-icons/ci";
+
 
 const apiClient = new ApiClient();
 type Variant = "LOGIN" | "SIGNUP";
@@ -18,6 +22,10 @@ const Home = () => {
   const [variant, setVariant] = useState<Variant>("LOGIN");
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const style = {
+    background: "linear-gradient(to bottom right, violet, lightblue)"
+  };
 
   const [data, setData] = useState({
     username: "",
@@ -130,23 +138,23 @@ const Home = () => {
 
   return (
     <>
-      <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-100 h-screen">
+      <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-900 h-screen">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <Image
             alt="Logo"
-            height="48"
-            width="48"
+            height="1000"
+            width="1000"
             className="mx-auto w-auto"
-            src="/images/logo.png"
+            src="/images/box-1.png"
           />
         </div>
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mb-8 text-center text-3xl font-bold tracking-tighter text-gray-900">
+          <h2 className="mb-8 text-center text-2xl font-bold tracking-tighter text-gray-200">
             {variant == "LOGIN"
               ? "Sign in to your account"
               : "Create an account"}
           </h2>
-          <div className="bg-white px-4 py-8 shadow-2xl sm:rounded-lg sm:px-10">
+          <div className="bg-gray-800 border border-x-indigo-500  border-y-blue-500 px-4 py-8 shadow-2xl sm:rounded-lg sm:px-10" >   
             <form
               onSubmit={(event) => {
                 if (isFormValid) {
@@ -155,14 +163,27 @@ const Home = () => {
                   event.preventDefault();
                 }
               }}
-              className="space-y-6"
+              className="space-y-6 "
             >
               {variant == "SIGNUP" && (
                 <Input
                   label="Username"
                   isRequired
+                  classNames={{
+                    label: "text-white/50",
+                    input: [
+                      "bg-transparent",
+                      "text-black/90 dark:text-white/90",
+                      "placeholder:text-default-700/50 dark:placeholder:text-white/60",
+                    ],
+                    inputWrapper:[
+                      "bg-default-200/60",
+                    ],
+                  }}
                   type="text"
-                  variant="underlined"
+                  startContent={
+                    <CiUser className="text-2xl text-black pointer-events-none flex-shrink-0" />
+                  }
                   value={data.username}
                   onChange={(e) =>
                     setData({ ...data, username: e.target.value })
@@ -176,10 +197,13 @@ const Home = () => {
                 />
               )}
               <Input
-                label="Email Adresse"
+                label="Email"
                 isRequired
                 type="email"
-                variant="underlined"
+                variant="flat"
+                startContent={
+                  <MdOutlineEmail className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                }
                 value={data.email}
                 onChange={(e) => setData({ ...data, email: e.target.value })}
                 onBlur={() => handleBlur("email")}
@@ -189,9 +213,12 @@ const Home = () => {
               />
 
               <Input
-                label="Passwort"
+                label="Password"
                 isRequired
-                variant="underlined"
+                variant="flat"
+                startContent={
+                  <MdVpnKey className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                }
                 type={isVisible ? "text" : "password"}
                 value={data.password}
                 onChange={(e) => setData({ ...data, password: e.target.value })}
@@ -224,10 +251,17 @@ const Home = () => {
                     setData({ ...data, rememberMe: value });
                   }}
                 >
+
+                <span className="text-sm text-[#38bdf8] font-semibold">  
                   Remember me
+                  <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-[#38bdf8] transition-all duration-300 group-hover:w-full"></span>
+                </span>
                 </Checkbox>
-                <button className="text-sm font-semibold text-[#0070e0] hover:underline">
-                  <Link href="">Forgot password?</Link>
+                <button className="relative text-sm font-semibold text-[#38bdf8] group no-underlineunderline">
+                  <Link href="" className="relativ group-hover:no-underline">
+                  Forgot password?
+                  <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-[#38bdf8] transition-all duration-300 group-hover:w-full"></span>
+                  </Link>
                 </button>
               </div>
               <div>
@@ -237,7 +271,7 @@ const Home = () => {
                   isDisabled={!isFormValid}
                   variant="solid"
                   type="submit"
-                  className="bg-[#0544b5] text-white font-semibold hover:bg-[#0070e0]"
+                  className="bg-[#38bdf8] text-white font-semibold hover:bg-[#38bdf8]"
                 >
                   {variant === "LOGIN" ? "Sign in" : "Register"}
                 </Button>
@@ -245,16 +279,19 @@ const Home = () => {
             </form>
           </div>
           <div>
-            <p className="mt-2 text-center text-sm text-gray-600">
+            <p className="mt-2 text-center text-sm text-gray-300">
               {variant === "LOGIN"
                 ? "Don't have an account?"
                 : "Already have an account?"}
-              <button
+              <span className="relative ml-1 font-medium text-[#38bdf8] group no-underline">
+                <button
                 onClick={toggleVariant}
-                className="ml-1 font-medium text-blue-500 hover:underline"
+                className="ml-1 font-medium text-[#38bdf8] group no-underline"
               >
                 {variant === "LOGIN" ? "Register" : "Sign in"}
-              </button>
+                </button>
+                <span className="absolute left-1 bottom-0 w-0 h-[2px] bg-[#38bdf8] transition-all duration-300 group-hover:w-full"></span>
+              </span>
             </p>
           </div>
         </div>
