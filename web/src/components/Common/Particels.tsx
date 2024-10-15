@@ -35,7 +35,7 @@ const Particels = () => {
             value: "#0000000",
           },
         },
-        fpsLimit: 50,
+        fpsLimit: 360,
         interactivity: {
           events: {
             onClick: {
