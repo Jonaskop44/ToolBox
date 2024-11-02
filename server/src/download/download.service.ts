@@ -3,13 +3,20 @@ import * as path from 'path';
 import { exec } from 'youtube-dl-exec';
 import * as fs from 'fs';
 import * as ffmpeg from 'fluent-ffmpeg';
+import * as SpotifyWebApi from 'spotify-web-api-node';
+import {
+  downloadMp3FromVideo,
+  getPlaylistTracks,
+  getTrack,
+  getYoutubeVideoUrl,
+} from './download.helper';
 
 @Injectable()
 export class DownloadService {
   constructor() {}
 
   async downloadVideo(videoUrl: string): Promise<string> {
-    const downloadsFolder = path.resolve(__dirname, '..', 'downloads');
+    const downloadsFolder = path.resolve(__dirname, '..', 'downloads/youtube');
 
     if (!fs.existsSync(downloadsFolder)) {
       fs.mkdirSync(downloadsFolder, { recursive: true });
@@ -82,6 +89,96 @@ export class DownloadService {
       return videoOutputPath;
     } catch (error) {
       throw new ConflictException('Error downloading video: ' + error);
+    }
+  }
+
+  async downloadSpotifySong(
+    songURL: string,
+    clientId: string,
+    clientSecret: string,
+  ): Promise<string> {
+    const spotifyApi = new SpotifyWebApi({
+      clientId: clientId,
+      clientSecret: clientSecret,
+    });
+
+    try {
+      const downloadsFolder = path.resolve(
+        __dirname,
+        '..',
+        'downloads/spotify/songs',
+      );
+
+      if (!fs.existsSync(downloadsFolder)) {
+        fs.mkdirSync(downloadsFolder, { recursive: true });
+      }
+
+      const data = await spotifyApi.clientCredentialsGrant();
+      const accessToken = data.body['access_token'];
+      spotifyApi.setAccessToken(accessToken);
+
+      const trackId = songURL.match(/\/track\/(\w+)/)[1];
+      const track = await getTrack(trackId, spotifyApi);
+      console.log('Track: ', track);
+
+      const youtubeVideoUrl = await getYoutubeVideoUrl(
+        track.trackName,
+        track.artistName,
+      );
+      console.log('Youtube Video URL: ', youtubeVideoUrl);
+
+      const songFilePath = `${downloadsFolder}/${track.artistName}-${track.trackName}.mp3`;
+
+      await downloadMp3FromVideo(youtubeVideoUrl, songFilePath);
+
+      return songFilePath;
+    } catch (error) {
+      throw new ConflictException('Error downloading song: ' + error);
+    }
+  }
+
+  async downloadSpotifyPlaylist(
+    playlistURL: string,
+    clientId: string,
+    clientSecret: string,
+  ): Promise<void> {
+    const spotifyApi = new SpotifyWebApi({
+      clientId: clientId,
+      clientSecret: clientSecret,
+    });
+
+    try {
+      const downloadsFolder = path.resolve(
+        __dirname,
+        '..',
+        'downloads/spotify/playlists',
+      );
+
+      if (!fs.existsSync(downloadsFolder)) {
+        fs.mkdirSync(downloadsFolder, { recursive: true });
+      }
+
+      const data = await spotifyApi.clientCredentialsGrant();
+      const accessToken = data.body['access_token'];
+      spotifyApi.setAccessToken(accessToken);
+
+      const playlistId = playlistURL.match(/\/playlist\/(\w+)/)[1];
+      const tracks = await getPlaylistTracks(playlistId, spotifyApi);
+      console.log('Tracks: ', tracks);
+
+      for (const track of tracks) {
+        const youtubeVideoUrl = await getYoutubeVideoUrl(
+          track.trackName,
+          track.artistName,
+        );
+        console.log('Youtube Video URL: ', youtubeVideoUrl);
+
+        const songFilePath = `${downloadsFolder}/${track.playlistName}/${track.artistName}-${track.trackName}.mp3`;
+
+        await downloadMp3FromVideo(youtubeVideoUrl, songFilePath);
+      }
+    } catch (error) {
+      throw new ConflictException('Error downloading song: ' + error);
     }
   }
 }
