@@ -19,6 +19,21 @@ export class NettoolsService {
       });
   }
 
+  async getlookupMacAddress(macAddress: string) {
+    return axios
+      .get(
+        `https://api.macaddress.io/v1?apiKey=${process.env.MACADDRESSIO_TOKEN}&output=json&search=${macAddress}`,
+      )
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        throw new ConflictException(
+          'Something went wrong while fetching MAC address info',
+        );
+      });
+  }
+
   async scanPorts(ip: string, startPort: number, endPort: number) {
     const openPorts: number[] = [];
 

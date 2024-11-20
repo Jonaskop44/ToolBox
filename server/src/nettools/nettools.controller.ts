@@ -10,6 +10,11 @@ export class NettoolsController {
     return this.nettoolsService.getIpInfo(ip);
   }
 
+  @Get('lookupMacAddress/:mac')
+  async getlookupMacAddress(@Param('mac') mac: string) {
+    return this.nettoolsService.getlookupMacAddress(mac);
+  }
+
   @Get('portscan/:ip')
   async scanPorts(
     @Param('ip') ip: string,
