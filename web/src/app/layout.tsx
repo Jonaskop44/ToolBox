@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { NextUIProvider } from "@nextui-org/react";
 import NextTopLoader from "nextjs-toploader";
 import SessionProvider from "@/context/SessionProvider";
 import { Toaster } from "sonner";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Poppins({ subsets: ["latin"], weight:["100", "400"]});
 
 export const metadata: Metadata = {
   title: "Create Next App",

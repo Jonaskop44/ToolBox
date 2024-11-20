@@ -15,6 +15,7 @@ import { MdVpnKey } from "react-icons/md";
 import { CiUser } from "react-icons/ci";
 
 
+
 const apiClient = new ApiClient();
 type Variant = "LOGIN" | "SIGNUP";
 
@@ -149,7 +150,14 @@ const Home = () => {
           />
         </div>
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mb-8 text-center text-2xl font-bold tracking-tighter text-gray-200">
+          <h2 className="mb-8 text-center text-3xl font-black tracking-tighter text-gray-200" 
+          style={{
+          background: "linear-gradient(90deg, #6a61ff, #b06ce4)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+
+          }}>
             {variant == "LOGIN"
               ? "Sign in to your account"
               : "Create an account"}
