@@ -4,6 +4,8 @@ import { exec } from 'youtube-dl-exec';
 import * as fs from 'fs';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as SpotifyWebApi from 'spotify-web-api-node';
+import * as archiver from 'archiver';
+import { Response } from 'express';
 import {
   downloadMp3FromVideo,
   getPlaylistTracks,
@@ -15,7 +17,7 @@ import {
 export class DownloadService {
   constructor() {}
 
-  async downloadVideo(videoUrl: string): Promise<string> {
+  async downloadVideo(videoUrl: string, res: Response): Promise<void> {
     const downloadsFolder = path.resolve(__dirname, '..', 'downloads/youtube');
 
     if (!fs.existsSync(downloadsFolder)) {
@@ -28,12 +30,11 @@ export class DownloadService {
         format: 'bestvideo+bestaudio/best',
       });
 
-      //Get the downloaded file name
+      // Get the downloaded file name
       const files = fs
         .readdirSync(downloadsFolder)
         .filter((file) => file.endsWith('.webm') || file.endsWith('.mp4'));
 
-      //Get title of the video
       const videoTitle = files[0].split('.')[0];
       const videoOutputPath = path.join(downloadsFolder, `${videoTitle}.mp4`);
 
@@ -52,10 +53,19 @@ export class DownloadService {
           );
         }
 
-        return videoOutputPath;
+        // Return the video to the client
+        res.setHeader(
+          'Content-Disposition',
+          'attachment; filename="video.mp4"',
+        );
+        res.download(videoOutputPath, () => {
+          fs.unlinkSync(videoOutputPath);
+        });
+
+        return;
       }
 
-      //Merge the video and audio files
+      // Merge video and audio files if required
       const videoFile = path.join(
         downloadsFolder,
         files.find((file) => file.includes('f') && file.endsWith('.webm')),
@@ -65,7 +75,7 @@ export class DownloadService {
         files.find((file) => file.includes('f') && file.endsWith('.webm')),
       );
 
-      //Use ffmpeg to merge the video and audio files
+      // Use ffmpeg to merge the video and audio files
       await new Promise((resolve, reject) => {
         ffmpeg()
           .input(videoFile)
@@ -86,7 +96,10 @@ export class DownloadService {
         );
       }
 
-      return videoOutputPath;
+      res.setHeader('Content-Disposition', 'attachment; filename="video.mp4"');
+      res.download(videoOutputPath, () => {
+        fs.unlinkSync(videoOutputPath);
+      });
     } catch (error) {
       throw new ConflictException('Error downloading video: ' + error);
     }
@@ -96,7 +109,8 @@ export class DownloadService {
     songURL: string,
     clientId: string,
     clientSecret: string,
-  ): Promise<string> {
+    res: Response,
+  ): Promise<void> {
     const spotifyApi = new SpotifyWebApi({
       clientId: clientId,
       clientSecret: clientSecret,
@@ -121,6 +135,7 @@ export class DownloadService {
       const track = await getTrack(trackId, spotifyApi);
       console.log('Track: ', track);
 
+      //Get youtube video URL
       const youtubeVideoUrl = await getYoutubeVideoUrl(
         track.trackName,
         track.artistName,
@@ -128,10 +143,27 @@ export class DownloadService {
       console.log('Youtube Video URL: ', youtubeVideoUrl);
 
       const songFilePath = `${downloadsFolder}/${track.artistName}-${track.trackName}.mp3`;
-
       await downloadMp3FromVideo(youtubeVideoUrl, songFilePath);
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename="' +
+          `${track.artistName}-${track.trackName}.mp3` +
+          '"',
+      );
 
-      return songFilePath;
+      res.download(songFilePath, (err) => {
+        if (err) {
+          console.error('Error during download:', err);
+        } else {
+          fs.unlink(songFilePath, (deleteErr) => {
+            if (deleteErr) {
+              console.error('Error deleting file:', deleteErr);
+            } else {
+              console.log(`File deleted: ${songFilePath}`);
+            }
+          });
+        }
+      });
     } catch (error) {
       throw new ConflictException('Error downloading song: ' + error);
     }
@@ -141,6 +173,7 @@ export class DownloadService {
     playlistURL: string,
     clientId: string,
     clientSecret: string,
+    res: Response,
   ): Promise<void> {
     const spotifyApi = new SpotifyWebApi({
       clientId: clientId,
@@ -166,6 +199,14 @@ export class DownloadService {
       const tracks = await getPlaylistTracks(playlistId, spotifyApi);
       console.log('Tracks: ', tracks);
 
+      const playlistFolder = path.join(downloadsFolder, playlistId);
+      if (!fs.existsSync(playlistFolder)) {
+        fs.mkdirSync(playlistFolder);
+      }
+
+      const trackFiles: string[] = [];
+
+      // Download each track and collect file paths
       for (const track of tracks) {
         const youtubeVideoUrl = await getYoutubeVideoUrl(
           track.trackName,
@@ -173,12 +214,47 @@ export class DownloadService {
         );
         console.log('Youtube Video URL: ', youtubeVideoUrl);
 
-        const songFilePath = `${downloadsFolder}/${track.playlistName}/${track.artistName}-${track.trackName}.mp3`;
-
+        const songFilePath = path.join(
+          playlistFolder,
+          `${track.artistName}-${track.trackName}.mp3`,
+        );
         await downloadMp3FromVideo(youtubeVideoUrl, songFilePath);
+        trackFiles.push(songFilePath);
       }
+
+      // Create a ZIP file of all tracks
+      const zipFilePath = path.join(downloadsFolder, `${playlistId}.zip`);
+      const output = fs.createWriteStream(zipFilePath);
+      const archive = archiver('zip', {
+        zlib: { level: 9 },
+      });
+
+      archive.pipe(output);
+      trackFiles.forEach((filePath) => {
+        archive.file(filePath, { name: path.basename(filePath) });
+      });
+      archive.finalize();
+
+      output.on('close', () => {
+        console.log(`ZIP file created: ${zipFilePath}`);
+
+        res.setHeader(
+          'Content-Disposition',
+          `attachment; filename="${playlistId}.zip"`,
+        );
+        res.setHeader('Content-Type', 'application/zip');
+        res.download(zipFilePath, (err) => {
+          if (err) {
+            console.error('Error during download:', err);
+          }
+
+          trackFiles.forEach((filePath) => fs.unlinkSync(filePath));
+          fs.unlinkSync(zipFilePath);
+          console.log('Files deleted after download');
+        });
+      });
     } catch (error) {
-      throw new ConflictException('Error downloading song: ' + error);
+      throw new ConflictException('Error downloading playlist: ' + error);
     }
   }
 }

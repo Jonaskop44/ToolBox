@@ -9,8 +9,7 @@ export class DownloadController {
   @Get('youtube/:url')
   async downloadVideo(@Param('url') url: string, @Res() res: Response) {
     const decodedUrl = decodeURIComponent(url);
-    const videoPath = await this.downloadService.downloadVideo(decodedUrl);
-    res.download(videoPath);
+    await this.downloadService.downloadVideo(decodedUrl, res);
   }
 
   @Get('spotify/song/:url')
@@ -21,12 +20,12 @@ export class DownloadController {
     @Res() res: Response,
   ) {
     const decodedUrl = decodeURIComponent(url);
-    const songPath = await this.downloadService.downloadSpotifySong(
+    await this.downloadService.downloadSpotifySong(
       decodedUrl,
       clientId,
       clientSecret,
+      res,
     );
-    res.download(songPath);
   }
 
   @Get('spotify/playlist/:url')
@@ -37,10 +36,11 @@ export class DownloadController {
     @Res() res: Response,
   ) {
     const decodedUrl = decodeURIComponent(url);
-    const songPath = await this.downloadService.downloadSpotifyPlaylist(
+    await this.downloadService.downloadSpotifyPlaylist(
       decodedUrl,
       clientId,
       clientSecret,
+      res,
     );
   }
 }
