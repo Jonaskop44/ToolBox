@@ -16,6 +16,7 @@ interface NettoolModalProps {
   onOpenChange: (open: boolean) => void;
   type: NettoolModalType;
   onSubmit: (data: Nettools) => void;
+  isLoading: boolean;
 }
 
 const NettoolModal: React.FC<NettoolModalProps> = ({
@@ -24,6 +25,7 @@ const NettoolModal: React.FC<NettoolModalProps> = ({
   onOpenChange,
   type,
   onSubmit,
+  isLoading,
 }) => {
   const [data, setData] = useState<Nettools>({
     ip: "",
@@ -33,7 +35,6 @@ const NettoolModal: React.FC<NettoolModalProps> = ({
   });
   const handleFormSubmit = () => {
     onSubmit(data);
-    onOpenChange(false);
   };
 
   return (
@@ -41,13 +42,15 @@ const NettoolModal: React.FC<NettoolModalProps> = ({
       <Modal
         isOpen={isOpen}
         onOpenChange={() => {
-          onOpenChange(false);
-          setData({
-            ip: "",
-            mac: "",
-            startPort: "",
-            endPort: "",
-          });
+          if (!isLoading) {
+            onOpenChange(false);
+            setData({
+              ip: "",
+              mac: "",
+              startPort: "",
+              endPort: "",
+            });
+          }
         }}
         placement="center"
         backdrop="blur"
@@ -124,7 +127,9 @@ const NettoolModal: React.FC<NettoolModalProps> = ({
                 )}
               </ModalBody>
               <ModalFooter>
-                <Button onPress={handleFormSubmit}>Senden</Button>
+                <Button isLoading={isLoading} onPress={handleFormSubmit}>
+                  Senden
+                </Button>
               </ModalFooter>
             </>
           )}

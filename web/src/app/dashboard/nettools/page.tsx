@@ -12,6 +12,7 @@ import {
   type Nettools,
 } from "@/types/nettools";
 import { useDisclosure } from "@nextui-org/react";
+import ResponseModal from "@/components/Popup/ResponseModal";
 
 const subcategoryCards = [
   {
@@ -38,8 +39,14 @@ const apiClient = new ApiClient();
 
 const Nettools = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isResponseModalOpen,
+    onOpen: openResponseModal,
+    onOpenChange: setResponseModalOpen,
+  } = useDisclosure();
   const [modalType, setModalType] = useState<NettoolModalType>();
   const [result, setResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCardClick = (type: NettoolModalType) => {
     setModalType(type);
@@ -48,10 +55,10 @@ const Nettools = () => {
 
   const handleRequest = async (data: Nettools) => {
     if (!modalType) {
-      console.error("Modal type is undefined");
       return;
     }
 
+    setIsLoading(true);
     try {
       const response =
         modalType === NettoolsTypes.IPINFO
@@ -64,9 +71,11 @@ const Nettools = () => {
               data.endPort
             );
       setResult(response.data);
-      return response.data;
+      setIsLoading(false);
+      openResponseModal();
+      onOpenChange();
     } catch (error) {
-      console.error(error);
+      setIsLoading(false);
     }
   };
 
@@ -100,6 +109,14 @@ const Nettools = () => {
         type={modalType!}
         onSubmit={handleRequest}
         onOpen={onOpen}
+        isLoading={isLoading}
+      />
+
+      <ResponseModal
+        isOpen={isResponseModalOpen}
+        onOpenChange={setResponseModalOpen}
+        result={result}
+        onOpen={openResponseModal}
       />
     </div>
   );
