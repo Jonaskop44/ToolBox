@@ -29,14 +29,14 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
       placement="center"
     >
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">Antwort</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">Response</ModalHeader>
         <ModalBody>
           {result ? (
             <pre className="whitespace-pre-wrap text-sm">
               {JSON.stringify(result, null, 2)}
             </pre>
           ) : (
-            <p>Es gab ein Problem bei der Anfrage.</p>
+            <p>There was a problem during the request</p>
           )}
         </ModalBody>
         <ModalFooter>
@@ -45,7 +45,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
             variant="light"
             onPress={() => onOpenChange(false)}
           >
-            Schließen
+            Close
           </Button>
         </ModalFooter>
       </ModalContent>

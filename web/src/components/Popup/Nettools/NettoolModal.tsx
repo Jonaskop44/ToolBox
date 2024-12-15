@@ -42,15 +42,13 @@ const NettoolModal: React.FC<NettoolModalProps> = ({
       <Modal
         isOpen={isOpen}
         onOpenChange={() => {
-          if (!isLoading) {
-            onOpenChange(false);
-            setData({
-              ip: "",
-              mac: "",
-              startPort: "",
-              endPort: "",
-            });
-          }
+          onOpenChange(false);
+          setData({
+            ip: "",
+            mac: "",
+            startPort: "",
+            endPort: "",
+          });
         }}
         placement="center"
         backdrop="blur"
@@ -128,7 +126,7 @@ const NettoolModal: React.FC<NettoolModalProps> = ({
               </ModalBody>
               <ModalFooter>
                 <Button isLoading={isLoading} onPress={handleFormSubmit}>
-                  Senden
+                  Send
                 </Button>
               </ModalFooter>
             </>
