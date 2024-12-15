@@ -6,12 +6,9 @@ import { Container } from "@tsparticles/engine";
 const Particels = () => {
   const [init, setInit] = useState(false);
 
- 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
-     
       await loadAll(engine);
-      
     }).then(() => {
       setInit(true);
     });
