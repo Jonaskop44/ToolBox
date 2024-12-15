@@ -2,11 +2,13 @@ import { Module } from '@nestjs/common';
 import { DiscordService } from './discord.service';
 import { DiscordController } from './discord.controller';
 import { Client, GatewayIntentBits } from 'discord.js';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   controllers: [DiscordController],
   providers: [
     DiscordService,
+    JwtService,
     {
       provide: Client,
       useFactory: () => {
