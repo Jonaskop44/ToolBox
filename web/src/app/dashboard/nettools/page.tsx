@@ -1,28 +1,25 @@
 "use client";
 import Cards from '@/components/Cards';
 import { IoIosInformationCircleOutline } from "react-icons/io";
-import { MdDeviceUnknown } from "react-icons/md";
 import { CiImport } from "react-icons/ci";
 import Link from 'next/link';
 
 const subcategoryCards = [
-    { title: "IP - Info", description: "Erhalten Sie detaillierte Informationen über IP-Adressen.", path: "/nettools/ip-info", icon: IoIosInformationCircleOutline },
-    { title: "Mac - Adressen Info", description: "Informationen über MAC-Adressen abrufen.", path: "/nettools/mac-info", icon: IoIosInformationCircleOutline },
-    { title: "Geräteerkennung", description: "?", path: "/nettools/device-detection", icon: MdDeviceUnknown },
-    { title: "Portscan", description: "?", path: "/dashboard/discord", icon: CiImport }
+    { title: "IP - Info", description: "Get information about different IP addresses.",  icon: IoIosInformationCircleOutline },
+    { title: "Mac - Address Info", description: "Retrieve information about MAC addresses.",  icon: IoIosInformationCircleOutline },
+    { title: "Portscan", description: "Scan IP addresses to identify open ports.",  icon: CiImport }
 ];
 
 const Nettools = () => {
     return (
         <div className="p-6">
-            <h1 className="text-white text-3xl mb-6">Nettools</h1>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-8 justify-center mx-auto">
+            <h1 className="text-white text-3xl mb-6 text-center">Nettools</h1>
+            <ul className="flex justify-center space-x-8">
                 {subcategoryCards.map((card) => (
                     <Cards
                         key={card.title}
                         title={card.title}
                         description={card.description}
-                        path={card.path}
                         icon={card.icon}
                     />
                 ))}

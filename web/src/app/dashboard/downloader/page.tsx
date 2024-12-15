@@ -5,22 +5,20 @@ import { AiOutlineSpotify } from "react-icons/ai";
 import Link from 'next/link';
 
 const subcategoryCards = [
-    { title: "Youtube", description: "Lade Videos direkt von YouTube herunter.", path: "/nettools/youtube-downloader", icon: AiOutlineYoutube }, 
-    { title: "Spotify", description: "Lade deine Lieblingslieder direkt von Spotify herunter.", path: "/nettools/spotify-downloader", icon: AiOutlineSpotify}
+    { title: "YouTube", description: "Download videos directly from YouTube.",  icon: AiOutlineYoutube }, 
+    { title: "Spotify", description: "Download your favorite songs directly from Spotify.",  icon: AiOutlineSpotify }
 ];
-
 
 const Nettools = () => {
     return (
         <div className="p-6">
-            <h1 className="text-white text-3xl mb-6">Downloader</h1>
+            <h1 className="text-white text-3xl mb-6 text-center">Downloader</h1>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-8 justify-center mx-auto">
                 {subcategoryCards.map((card) => (
                     <Cards
                         key={card.title}
                         title={card.title}
                         description={card.description}
-                        path={card.path}
                         icon={card.icon}
                     />
                 ))}
