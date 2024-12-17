@@ -16,20 +16,20 @@ import ResponseModal from "@/components/Popup/ResponseModal";
 
 const subcategoryCards = [
   {
-    title: "IP - Info",
-    description: "Erhalten Sie detaillierte Informationen über IP-Adressen.",
+    title: "IP Info",
+    description: "Get detailed information about IP addresses.",
     type: NettoolsTypes.IPINFO,
     icon: IoIosInformationCircleOutline,
   },
   {
-    title: "Mac - Adressen Info",
-    description: "Informationen über MAC-Adressen abrufen.",
+    title: "Mac Address Info",
+    description: "Retrieve information about MAC addresses.",
     type: NettoolsTypes.MACLOOKUP,
     icon: IoIosInformationCircleOutline,
   },
   {
     title: "Portscan",
-    description: "?",
+    description: "Scan the available ports on a given IP address.",
     type: NettoolsTypes.PORTSCAN,
     icon: CiImport,
   },
@@ -82,8 +82,11 @@ const Nettools = () => {
   return (
     <div>
       <div className="p-6">
-        <h1 className="text-white text-3xl mb-6">Nettools</h1>
-        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-8 justify-center mx-auto">
+        {/* Center the title */}
+        <h1 className="text-white text-3xl mb-6 text-center">Nettools</h1>
+
+        {/* Center the cards and make them appear side by side */}
+        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 justify-center mx-auto">
           {subcategoryCards.map((card) => (
             <Cards
               key={card.title}
@@ -94,6 +97,8 @@ const Nettools = () => {
             />
           ))}
         </ul>
+
+        {/* Center the "Home" button */}
         <div className="flex justify-center mt-6">
           <Link href="/dashboard">
             <button className="bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700 transition-colors">
@@ -103,6 +108,7 @@ const Nettools = () => {
         </div>
       </div>
 
+      {/* Modals */}
       <NettoolModal
         isOpen={isOpen}
         onOpenChange={onOpenChange}

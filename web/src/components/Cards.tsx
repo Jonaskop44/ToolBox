@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { IconType } from "react-icons";
 
 interface CardsProps {
@@ -17,21 +16,21 @@ const Cards: React.FC<CardsProps> = ({
   return (
     <div
       onClick={onClick}
-      className="w-full sm:w-64 flex flex-col bg-gray-700 rounded-lg shadow-md border border-[#38bdf8] hover:scale-105 hover:shadow-lg transition-transform duration-300 ease-in-out"
+      className="relative w-full sm:w-72 flex flex-col bg-gray-800 rounded-xl shadow-lg border border-[#38bdf8] hover:border-[#38bdf8] hover:shadow-xl transform transition-transform duration-300 ease-in-out cursor-pointer hover:scale-105"
     >
-      <div className="relative p-4">
-        <div className="absolute top-0 right-0 mt-2 mr-2 bg-[#38bdf8] w-10 h-10 flex items-center justify-center rounded-full">
-          <Icon className="text-gray-900" size={30} />
-        </div>
-        <h3 className="mt-10 text-white text-lg font-semibold text-center font-mono">
-          {title}
-        </h3>
+      {/* Highlighted Icon */}
+      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-[#38bdf8] p-4 rounded-full shadow-md">
+        <Icon className="text-gray-900" size={32} />
       </div>
-      <div className="px-4 py-2 bg-gray-800 rounded-b-lg">
-        <p className="text-gray-300 text-sm text-center font-sans">
-          {description}
-        </p>
+
+      {/* Card Content */}
+      <div className="flex flex-col items-center p-6 pt-10">
+        <h3 className="text-white text-lg font-bold mb-2">{title}</h3>
+        <p className="text-gray-300 text-sm text-center">{description}</p>
       </div>
+
+      {/* Decorative Bottom Border */}
+      <div className="h-1 w-3/4 mx-auto bg-[#38bdf8] rounded-full mt-4"></div>
     </div>
   );
 };

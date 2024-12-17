@@ -8,13 +8,11 @@ const subcategoryCards = [
   {
     title: "Nuker",
     description: "Lösche oder erstelle Discord-Kanäle.",
-    path: "/nettools/youtube-downloader",
     icon: MdDeleteOutline,
   },
   {
     title: "Message Spammer",
     description: "Spamme Nachrichten in Discord-Chats.",
-    path: "/nettools/spotify-downloader",
     icon: LuMessageCircle,
   },
 ];
