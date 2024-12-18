@@ -36,7 +36,9 @@ export default class Helper {
   async downloadSong(url: string, clientId: string, clientSecret: string) {
     try {
       const response = await axios.get(
-        `/download/youtube/${encodeURIComponent(url)}`,
+        `/download/spotify/song/${encodeURIComponent(
+          url
+        )}?clientId=${clientId}&clientSecret=${clientSecret}`,
         {
           responseType: "blob",
         }
@@ -50,14 +52,14 @@ export default class Helper {
 
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute("download", "video.mp4");
+      link.setAttribute("download", "song.mp3");
       document.body.appendChild(link);
       link.click();
 
       window.URL.revokeObjectURL(blobUrl);
       document.body.removeChild(link);
     } catch (error) {
-      console.error("Fehler beim Herunterladen des Videos:", error);
+      console.error("Fehler beim Herunterladen des Song:", error);
       return { status: false };
     }
   }
@@ -65,7 +67,9 @@ export default class Helper {
   async downloadPlaylist(url: string, clientId: string, clientSecret: string) {
     try {
       const response = await axios.get(
-        `/download/youtube/${encodeURIComponent(url)}`,
+        `/download/spotify/playlist/${encodeURIComponent(
+          url
+        )}?clientId=${clientId}&clientSecret=${clientSecret}`,
         {
           responseType: "blob",
         }
@@ -79,18 +83,15 @@ export default class Helper {
 
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute("download", "video.mp4");
+      link.setAttribute("download", "song.mp3");
       document.body.appendChild(link);
       link.click();
 
       window.URL.revokeObjectURL(blobUrl);
       document.body.removeChild(link);
     } catch (error) {
-      console.error("Fehler beim Herunterladen des Videos:", error);
+      console.error("Fehler beim Herunterladen des Song:", error);
       return { status: false };
     }
   }
 }
-
-// http://127.0.0.1:3001/api/v1/download/spotify/song/SONG_URL?clientId=CLIENTID&clientSecret=CLIENT_SECRET
-// http://127.0.0.1:3001/api/v1/download/spotify/playlist/PLAYLIST?clientId=YOUR_CLIENT&clientSecret=YOUR_SECRECT
