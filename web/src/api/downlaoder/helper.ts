@@ -45,21 +45,27 @@ export default class Helper {
       );
 
       if (response.status !== 200) {
+        console.error("Failed to download song.");
         return { status: false };
       }
 
-      const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+      const contentDisposition = response.headers["content-disposition"];
+      const fileName = contentDisposition
+        ? contentDisposition.split("filename=")[1].replace(/"/g, "")
+        : "song.mp3";
 
+      const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute("download", "song.mp3");
+      link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
-
       window.URL.revokeObjectURL(blobUrl);
       document.body.removeChild(link);
+
+      return { status: true };
     } catch (error) {
-      console.error("Fehler beim Herunterladen des Song:", error);
+      console.error("Error downloading song:", error);
       return { status: false };
     }
   }
@@ -76,21 +82,27 @@ export default class Helper {
       );
 
       if (response.status !== 200) {
+        console.error("Failed to download playlist.");
         return { status: false };
       }
 
-      const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+      const contentDisposition = response.headers["content-disposition"];
+      const fileName = contentDisposition
+        ? contentDisposition.split("filename=")[1].replace(/"/g, "")
+        : "playlist.zip";
 
+      const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute("download", "song.mp3");
+      link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
-
       window.URL.revokeObjectURL(blobUrl);
       document.body.removeChild(link);
+
+      return { status: true };
     } catch (error) {
-      console.error("Fehler beim Herunterladen des Song:", error);
+      console.error("Error downloading playlist:", error);
       return { status: false };
     }
   }
