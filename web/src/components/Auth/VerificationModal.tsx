@@ -129,14 +129,13 @@ const VerificationModal: React.FC<VerificationModalProps> = ({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1 dark:text-white">
-                Konto aktivieren
+                Activate account
               </ModalHeader>
               <ModalBody>
                 <p>
-                  Um Ihr Konto zu aktivieren geben Sie bitte den 15-minütigen
-                  gültigen Bestätigungscode ein, den wir an{" "}
-                  <span className="font-semibold">{data.email}</span> gesendet
-                  haben.
+                  To activate your account, please enter the 15-minute
+                  validation code that we have sent to{" "}
+                  <span className="font-semibold">{data.email}</span>
                 </p>
                 <Input
                   label="Bestätigungscode"
@@ -172,7 +171,7 @@ const VerificationModal: React.FC<VerificationModalProps> = ({
                     onPress={onResend}
                     className="cursor-pointer"
                   >
-                    Bestätigungscode erneut senden
+                    Send confirmation code again
                   </Link>
                 </div>
               </ModalBody>
@@ -186,7 +185,7 @@ const VerificationModal: React.FC<VerificationModalProps> = ({
                     isCodeValid ? "cursor-not-allowed opacity-50" : ""
                   }`}
                 >
-                  Bestätigen
+                  Confirm
                 </Button>
               </ModalFooter>
             </>

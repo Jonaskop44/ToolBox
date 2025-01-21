@@ -162,12 +162,12 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Passwort zurücksetzen
+                Reset password
               </ModalHeader>
               <ModalBody>
                 <p>
-                  Um Ihr Passwort zurückzusetzen, benötigen wir einen
-                  Sicherheitscode den wir Ihnen per E-Mail gesendet haben.
+                  To reset your password, we need a security code that we have
+                  sent you by e-mail.
                 </p>
                 <Input
                   label="Sicherheitscode"
@@ -206,7 +206,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                     onPress={onResend}
                     className="cursor-pointer"
                   >
-                    Sicherheitscode erneut senden
+                    Send security code again
                   </Link>
                 </div>
               </ModalBody>
@@ -218,7 +218,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                   onPress={onSubmit}
                   className={"cursor-pointer"}
                 >
-                  Prüfen
+                  Check
                 </Button>
               </ModalFooter>
             </>
@@ -268,12 +268,12 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Passwort zurücksetzen
+                Reset password
               </ModalHeader>
               <ModalBody>
                 <p>
-                  Geben Sie nun ein neues Passwort ein um den Vorgang
-                  abzuschließen.
+                  Now enter a new password to complete the process. complete the
+                  process.
                 </p>
                 <Input
                   label="Neues Passwort"
@@ -349,7 +349,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                   onPress={onReset}
                   className={"cursor-pointer"}
                 >
-                  Zurücksetzen
+                  Reset
                 </Button>
               </ModalFooter>
             </>
