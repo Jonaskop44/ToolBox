@@ -26,6 +26,12 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const user = await this.validateUser(dto);
+
+    if (user.activated === false) {
+      this.userService.resendActivationEmail(user.email);
+      throw new UnauthorizedException('User not activated');
+    }
+
     const payload = {
       email: user.email,
       sub: {
