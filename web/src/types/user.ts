@@ -4,6 +4,7 @@ export interface User {
   username?: string;
   password?: string;
   role?: string;
+  activated?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

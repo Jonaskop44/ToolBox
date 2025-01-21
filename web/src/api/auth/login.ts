@@ -12,18 +12,20 @@ export default class Login {
         password: user.password,
       })
       .then((response) => {
-        if (response.status !== 201) return { status: false, data: null };
+        if (response.status !== 201)
+          return { status: false, data: null, message: response.data.message };
         const data = response.data;
 
         const { setUser } = useUserStore.getState();
         setUser(data);
 
-        return { status: true, data: data };
+        return { status: true, data: data, message: "Login sucessfully" };
       })
       .catch((error) => {
         return {
           status: false,
           data: null,
+          message: error.response.data.message || "Something went wrong!",
         };
       });
   }
